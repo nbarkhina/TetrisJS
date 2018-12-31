@@ -47,7 +47,11 @@ export class MyApp {
         $('#divMain')[0].addEventListener( 'touchstart', this.touchStart, false );
         $('#divMain')[0].addEventListener( 'touchend', this.touchEnd, false );
         $('#divMain')[0].addEventListener( 'touchmove', this.touchMove, false );
+        // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
+        // document.getElementById('btnStart').ontouchmove = function(e){};
     }
+
+
 
     touchDirection:string='';
     touchX_Start:number=0;
@@ -57,6 +61,10 @@ export class MyApp {
     touchEnd(event:TouchEvent){
         
         let app = window.myApp as MyApp;
+        if (app.touchDirection=='left')
+            app.moveLeft();
+        if (app.touchDirection=='right')
+            app.moveRight();
         app.touchDirection = '';
     }
 
@@ -70,7 +78,7 @@ export class MyApp {
         let delta = (new Date().getTime() - app.lastTouch.getTime());
         if (delta<500)
         {
-            event.preventDefault();
+            event.preventDefault();    
         }
         app.lastTouch = new Date();
 
@@ -231,6 +239,785 @@ export class MyApp {
         }
     }
 
+    gameLoop()
+    {
+        //program loop
+        if (!this.startGame)
+        {
+            this.newPaint();
+            return;
+        }
+        if (this.paused)
+        {
+            this.newPaint();
+            return;
+        }
+
+        if (this.level == 1)
+            this.levelSpeed = 30;
+        if (this.level == 2)
+        this.levelSpeed = 25;
+        if (this.level == 3)
+        this.levelSpeed = 20;
+        if (this.level == 4)
+        this.levelSpeed = 17;
+        if (this.level == 5)
+        this.levelSpeed = 14;
+        if (this.level == 6)
+        this.levelSpeed = 10;
+        if (this.level == 7)
+        this.levelSpeed = 8;
+        if (this.level == 8)
+        this.levelSpeed = 5;
+        if (this.level == 9)
+        this.levelSpeed = 3;
+        if (this.level == 10)
+        this.levelSpeed = 2;
+        if (this.timer == -1)
+        this.checkMatrix();
+        if (this.toClear)
+        this.timer--;
+        else
+        this.timer++;
+        if (this.timer == -24)
+        {
+            this.clearBlocks();
+            this.toClear = false;
+            this.timer = 0;
+        }
+        if (this.toMakePiece && this.timer >= 0)
+        {
+            this.makePiece();
+            this.toMakePiece = false;
+        }
+        if (this.upKey && !this.toClear)
+        {
+            this.rotate();
+            this.upKey = false;
+        }
+        if (this.downKey && !this.toClear)
+            this.moveDown();
+        if (this.leftKey && !this.toClear && this.keytimer != 2)
+        {
+            this.moveLeft();
+            this.keytimer++;
+        }
+
+        if (this.rightKey && !this.toClear && this.keytimer != 2)
+        {
+            this.moveRight();
+            this.keytimer++;
+        }
+
+        if (this.timer == this.levelSpeed)
+        {
+            this.timer = 0;
+            this.moveDown();
+        }
+        this.newPaint();
+        
+    } 
+
+    gameover()
+    {
+        this.startGame = false;
+        for (let i = 0; i < 4; i++)
+            for (let j = 0; j < 7; j++)
+                this.nextPieceMatrix[i][j] = 0;
+        for (let i = 0; i < 20; i++)
+        {
+            for (let j = 0; j < 10; j++)
+            {
+                this.gameMatrix[i][j] = 0;
+                this.gameMatrixBuffer[i][j] = 0;
+            }
+
+        }
+        this.gameOver = true;
+    }
+
+    makePiece()
+    {
+        this.piece = this.nextPiece;
+        this.nextPiece = this.getRandomNumber(7) +1;
+        for (let i = 0; i < 4; i++)
+            for (let j = 0; j < 7; j++)
+            this.nextPieceMatrix[i][j] = 0;
+        if (this.gameMatrix[1][4] != 0)
+            this.gameover();
+        if (this.nextPiece == 1)
+        {
+            this.nextPieceMatrix[1][4] = 1;
+            this.nextPieceMatrix[2][4] = 1;
+            this.nextPieceMatrix[2][3] = 1;
+            this.nextPieceMatrix[2][5] = 1;
+        }
+        if (this.nextPiece == 2)
+        {
+            this.nextPieceMatrix[1][5] = 2;
+            this.nextPieceMatrix[1][4] = 2;
+            this.nextPieceMatrix[2][4] = 2;
+            this.nextPieceMatrix[2][3] = 2;
+        }
+        if (this.nextPiece == 3)
+        {
+            this.nextPieceMatrix[1][3] = 3;
+            this.nextPieceMatrix[1][4] = 3;
+            this.nextPieceMatrix[2][4] = 3;
+            this.nextPieceMatrix[2][5] = 3;
+        }
+        if (this.nextPiece == 4)
+        {
+            this.nextPieceMatrix[1][5] = 4;
+            this.nextPieceMatrix[2][5] = 4;
+            this.nextPieceMatrix[2][4] = 4;
+            this.nextPieceMatrix[2][3] = 4;
+        }
+        if (this.nextPiece == 5)
+        {
+            this.nextPieceMatrix[1][3] = 5;
+            this.nextPieceMatrix[2][3] = 5;
+            this.nextPieceMatrix[2][4] = 5;
+            this.nextPieceMatrix[2][5] = 5;
+        }
+        if (this.nextPiece == 6)
+        {
+            this.nextPieceMatrix[1][5] = 6;
+            this.nextPieceMatrix[1][4] = 6;
+            this.nextPieceMatrix[2][4] = 6;
+            this.nextPieceMatrix[2][5] = 6;
+        }
+        if (this.nextPiece == 7)
+        {
+            this.nextPieceMatrix[0][4] = 7;
+            this.nextPieceMatrix[1][4] = 7;
+            this.nextPieceMatrix[2][4] = 7;
+            this.nextPieceMatrix[3][4] = 7;
+        }
+        if (this.piece == 1)
+        {
+            this.gameMatrixBuffer[0][5] = 1;
+            this.gameMatrixBuffer[1][5] = 1;
+            this.gameMatrixBuffer[1][4] = 1;
+            this.gameMatrixBuffer[1][6] = 1;
+            this.centX = 5;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.piece == 2)
+        {
+            this.gameMatrixBuffer[0][5] = 2;
+            this.gameMatrixBuffer[0][4] = 2;
+            this.gameMatrixBuffer[1][4] = 2;
+            this.gameMatrixBuffer[1][3] = 2;
+            this.centX = 4;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.piece == 3)
+        {
+            this.gameMatrixBuffer[0][3] = 3;
+            this.gameMatrixBuffer[0][4] = 3;
+            this.gameMatrixBuffer[1][4] = 3;
+            this.gameMatrixBuffer[1][5] = 3;
+            this.centX = 4;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.piece == 4)
+        {
+            this.gameMatrixBuffer[0][5] = 4;
+            this.gameMatrixBuffer[1][5] = 4;
+            this.gameMatrixBuffer[1][4] = 4;
+            this.gameMatrixBuffer[1][3] = 4;
+            this.centX = 4;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.piece == 5)
+        {
+            this.gameMatrixBuffer[0][3] = 5;
+            this.gameMatrixBuffer[1][3] = 5;
+            this.gameMatrixBuffer[1][4] = 5;
+            this.gameMatrixBuffer[1][5] = 5;
+            this.centX = 4;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.piece == 6)
+        {
+            this.gameMatrixBuffer[0][5] = 6;
+            this.gameMatrixBuffer[0][4] = 6;
+            this.gameMatrixBuffer[1][4] = 6;
+            this.gameMatrixBuffer[1][5] = 6;
+        }
+        if (this.piece == 7)
+        {
+            this.gameMatrixBuffer[0][5] = 7;
+            this.gameMatrixBuffer[1][5] = 7;
+            this.gameMatrixBuffer[2][5] = 7;
+            this.gameMatrixBuffer[3][5] = 7;
+            this.centX = 5;
+            this.centY = 1;
+            this.state = 1;
+        }
+        if (this.gameMatrix[1][4] != 0)
+            this.gameover();
+    }
+
+    moveLeft()
+    {
+        let success = true;
+        for (let i = 0; i < 10; i++)
+        {
+            for (let j = 0; j < 20; j++)
+            {
+                if (this.gameMatrixBuffer[j][i] != 0 && i == 0)
+                    success = false;
+                if (this.gameMatrixBuffer[j][i] != 0 && i != 0 && this.gameMatrix[j][i - 1] != 0)
+                    success = false;
+            }
+        }
+        if (success)
+        {
+            this.centX -= 1;
+            for (let i = 1; i < 10; i++)
+            {
+                for (let j = 0; j < 20; j++)
+                {
+                    if (this.gameMatrixBuffer[j][i] != 0)
+                    {
+                        this.gameMatrixBuffer[j][i - 1] = this.gameMatrixBuffer[j][i];
+                        this.gameMatrixBuffer[j][i] = 0;
+                    }
+                }
+            }
+        }
+
+    }
+
+    moveRight()
+    {
+        let success = true;
+        for (let i = 9; i > -1; i--)
+        {
+            for (let j = 0; j < 20; j++)
+            {
+                if (this.gameMatrixBuffer[j][i] != 0 && i == 9)
+                    success = false;
+                if (this.gameMatrixBuffer[j][i] != 0 && i != 9 && this.gameMatrix[j][i + 1] != 0)
+                    success = false;
+            }
+        }
+        if (success)
+        {
+            this.centX += 1;
+            for (let i = 8; i > -1; i--)
+            {
+                for (let j = 0; j < 20; j++)
+                {
+                    if (this.gameMatrixBuffer[j][i] != 0)
+                    {
+                        this.gameMatrixBuffer[j][i + 1] = this.gameMatrixBuffer[j][i];
+                        this.gameMatrixBuffer[j][i] = 0;
+                    }
+                }
+            }
+        }
+
+    }
+
+    moveDown()
+    {
+        let success = true;
+        for (let i = 0; i < 10; i++)
+        {
+            for (let j = 0; j < 20; j++)
+            {
+                if (this.gameMatrixBuffer[j][i] != 0 && j == 19)
+                    success = false;
+                if (this.gameMatrixBuffer[j][i] != 0 && j != 19 && this.gameMatrix[j + 1][i] != 0)
+                    success = false;
+            }
+        }
+        if (success)
+        {
+            this.centY += 1;
+            for (let i = 19; i > -1; i--)
+            {
+                for (let j = 0; j < 10; j++)
+                {
+                    if (this.gameMatrixBuffer[i][j] != 0)
+                    {
+                        this.gameMatrixBuffer[i + 1][j] = this.gameMatrixBuffer[i][j];
+                        this.gameMatrixBuffer[i][j] = 0;
+                    }
+                }
+            }
+            this.timer = 0;
+        }
+        else
+        {
+            for (let i = 0; i < 20; i++)
+            {
+                for (let j = 0; j < 10; j++)
+                {
+                    if (this.gameMatrixBuffer[i][j] != 0)
+                    {
+                        this.gameMatrix[i][j] = this.gameMatrixBuffer[i][j];
+                        this.gameMatrixBuffer[i][j] = 0;
+                    }
+                }
+            }
+            this.toMakePiece = true;
+            this.timer = -1;
+        }
+    }
+
+    rotate()
+    {
+        if (this.piece == 1)
+        {
+            if (this.state == 1)
+            {
+                if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centX != 0 && this.gameMatrix[this.centY][this.centX - 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.state = 3;
+                    return;
+                }
+            }
+            if (this.state == 3)
+            {
+                if (this.gameMatrix[this.centY - 1][this.centX] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.state = 4;
+                    return;
+                }
+            }
+            if (this.state == 4)
+            {
+                if (this.centX != 9 && this.gameMatrix[this.centY][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 1
+        if (this.piece == 2)
+        {
+            if (this.state == 1)
+            {
+                if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX - 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centX != 9 && this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 2
+        if (this.piece == 3)
+        {
+            if (this.state == 1)
+            {
+                if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centX != 0 && this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX - 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 3
+        if (this.piece == 4)
+        {
+            if (this.state == 1)
+            {
+                if (this.centY != 19 && this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY + 1][this.centX] == 0 && this.gameMatrix[this.centY + 1][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centX != 0 && this.gameMatrix[this.centY][this.centX - 1] == 0 && this.gameMatrix[this.centY + 1][this.centX - 1] == 0 && this.gameMatrix[this.centY][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX + 1] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.state = 3;
+                    return;
+                }
+            }
+            if (this.state == 3)
+            {
+                if (this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX - 1] == 0 && this.gameMatrix[this.centY + 1][this.centX] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.state = 4;
+                    return;
+                }
+            }
+            if (this.state == 4)
+            {
+                if (this.centX != 9 && this.gameMatrix[this.centY][this.centX - 1] == 0 && this.gameMatrix[this.centY][this.centX + 1] == 0 && this.gameMatrix[this.centY - 1][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 4
+        if (this.piece == 5)
+        {
+            if (this.state == 1)
+            {
+                if (this.centY != 19 && this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY + 1][this.centX] == 0 && this.gameMatrix[this.centY - 1][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centX != 0 && this.gameMatrix[this.centY][this.centX - 1] == 0 && this.gameMatrix[this.centY + 1][this.centX + 1] == 0 && this.gameMatrix[this.centY][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX + 1] = 0;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.state = 3;
+                    return;
+                }
+            }
+            if (this.state == 3)
+            {
+                if (this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY + 1][this.centX - 1] == 0 && this.gameMatrix[this.centY + 1][this.centX] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX + 1] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.state = 4;
+                    return;
+                }
+            }
+            if (this.state == 4)
+            {
+                if (this.centX != 9 && this.gameMatrix[this.centY][this.centX - 1] == 0 && this.gameMatrix[this.centY][this.centX + 1] == 0 && this.gameMatrix[this.centY - 1][this.centX - 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX - 1] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 5
+        if (this.piece == 7)
+        {
+            if (this.state == 1)
+            {
+                if (this.centX != 0 && this.centX != 1 && this.centX != 9 && this.gameMatrix[this.centY][this.centX - 1] == 0 && this.gameMatrix[this.centY][this.centX - 2] == 0 && this.gameMatrix[this.centY][this.centX + 1] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 2] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = 0;
+                    this.gameMatrixBuffer[this.centY + 2][this.centX] = 0;
+                    this.state = 2;
+                    return;
+                }
+            }
+            if (this.state == 2)
+            {
+                if (this.centY != 19 && this.centY != 18 && this.gameMatrix[this.centY - 1][this.centX] == 0 && this.gameMatrix[this.centY + 1][this.centX] == 0 && this.gameMatrix[this.centY + 2][this.centX] == 0)
+                {
+                    this.gameMatrixBuffer[this.centY + 2][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY + 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY - 1][this.centX] = this.piece;
+                    this.gameMatrixBuffer[this.centY][this.centX - 1] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX - 2] = 0;
+                    this.gameMatrixBuffer[this.centY][this.centX + 1] = 0;
+                    this.state = 1;
+                    return;
+                }
+            }
+        }//this.piece 7
+    }
+
+    checkMatrix()
+    {
+        for (let i = 0; i < 20; i++)
+        {
+            let temp = true;
+            for (let j = 0; j < 10; j++)
+            {
+                if (this.gameMatrix[i][j] == 0)
+                    temp = false;
+            }
+            if (temp)
+            {
+                for (let k = 0; k < 10; k++)
+                    this.gameMatrix[i][k] = 8;
+                this.toClear = true;
+            }
+        }
+        if (this.toClear){}
+            //TODO blockclear.play();
+        else
+        {
+            //TODO dropblock.play();
+            this.score++;
+        }
+    }
+
+    clearBlocks()
+    {
+        let tempLines = 0;
+        for (let i = 0; i < 20; i++)
+        {
+            let temp = false;
+            for (let j = 0; j < 10; j++)
+            {
+                if (this.gameMatrix[i][j] == 8)
+                {
+                    temp = true;
+                    for (let k = i; k > 0; k--)
+                    {
+                        this.gameMatrix[k][j] = this.gameMatrix[k - 1][j];
+                    }
+                    this.gameMatrix[0][j] = 0;
+                }
+            }
+            if (temp)
+                tempLines++;
+
+        }
+        if (tempLines == 1)
+            this.score += 50;
+        if (tempLines == 2)
+            this.score += 100;
+        if (tempLines == 3)
+            this.score += 300;
+        if (tempLines == 4)
+            this.score += 1000;
+        this.lines += tempLines;
+        this.nextLevel += tempLines;
+        if (this.nextLevel >= 10)
+        {
+            //TODO newlevel.play();
+            this.nextLevel -= 10;
+            this.level++;
+        }
+        else
+            ;//TODO blockcleared.play();
+    }
+
+    // public void paint()
+    // {
+
+
+    //     if (this.paused)
+    //     {
+
+    //     }
+    //     else if (!this.gameOver)
+    //     {
+    //         draw next piece
+    //         for (int i = 0; i < 4; i++)
+    //         {
+    //             for (int j = 0; j < 7; j++)
+    //             {
+    //                 if (nextPieceMatrix[i][j] == 1)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Blue,Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 2)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Orange, Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 3)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Purple, Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 4)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Red, Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 5)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Cyan, Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 6)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Green, Colors.White);
+    //                 }
+    //                 if (nextPieceMatrix[i][j] == 7)
+    //                 {
+    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Yellow, Colors.White);
+    //                 }
+    //             }
+    //         }
+
+    //         for (let i = 0; i < 20; i++)
+    //         {
+    //             for (let j = 0; j < 10; j++)
+    //             {
+    //                 if (gameMatrixBuffer[i][j] == 1)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 2)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Orange, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 3)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Purple, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 4)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Red, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 5)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Cyan, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 6)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Green, Colors.White);
+    //                 }
+    //                 if (gameMatrixBuffer[i][j] == 7)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Yellow, Colors.White);
+    //                 }
+
+
+    //                 //for clearing purposes
+    //                 if (gameMatrix[i][j] == 8)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), c, Color.FromArgb(0,0,0,0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 1)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 2)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Orange, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 3)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Purple, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 4)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Red, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 5)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Cyan, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 6)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Green, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+    //                 if (gameMatrix[i][j] == 7)
+    //                 {
+    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Yellow, Color.FromArgb(0, 0, 0, 0));
+    //                 }
+
+    //             }
+    //         }
+    //     }
+
+    // }
+
+
+
+
+
+    /* MY FUNCTIONS */
+
     requestNextFrame(){
         let myApp:MyApp = window.myApp;
         myApp.gameLoop();
@@ -238,15 +1025,14 @@ export class MyApp {
     }
 
     getMessage():string{
-        if (!this.draw)
-            return 'start drawing';
-        else
-            return 'stop drawing';
+        return 'Click Me';
+        // if (!this.draw)
+        //     return 'start drawing';
+        // else
+        //     return 'stop drawing';
     }
 
-
-    draw:boolean = false;
-
+    //draw:boolean = false;
     lastCalledTime = new Date();
     fpscounter = 0;
     currentfps = 0;
@@ -264,12 +1050,8 @@ export class MyApp {
 
     }
 
-
-
-    gameLoop(){
+    newPaint(){
         this.countFPS();
-        if (!this.draw)
-            return;
         let xCounter = -1;
         let yCounter = 0;
         let randBlock = 0;
@@ -292,29 +1074,37 @@ export class MyApp {
             {
                 randBlock = myApp.getRandomNumber(10);
             }
-            // 
+
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
 
-            if (x==randBlock)
+            if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0)
             {
-                if (element.innerText!='0')
-                {
-                    element.innerText = "0";
-                    element.style["background-color"] = 'green';
-                    // background-color:lightblue
-                }
-                    
+                //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
+                element.style["background-color"] = 'blue';
             }
             else
-            {
-                if (element.innerText!='x')
-                {
-                    element.innerText = "x";
-                    element.style["background-color"] = 'lightblue';
-                }
+                element.style["background-color"] = 'white';
+
+            // if (x==randBlock)
+            // {
+            //     if (element.innerText!='0')
+            //     {
+            //         element.innerText = "0";
+            //         element.style["background-color"] = 'green';
+            //         // background-color:lightblue
+            //     }
                     
-            }
+            // }
+            // else
+            // {
+            //     if (element.innerText!='x')
+            //     {
+            //         element.innerText = "x";
+            //         element.style["background-color"] = 'lightblue';
+            //     }
+                    
+            // }
                 
         });
 
@@ -330,11 +1120,13 @@ export class MyApp {
 
     btnClick() {
 
+        this.reset();
+
         // $("#mydiv").html('button clicked');
-        if (this.draw)
-            this.draw = false;
-        else
-            this.draw = true;
+        // if (this.draw)
+        //     this.draw = false;
+        // else
+        //     this.draw = true;
 
     }
 
