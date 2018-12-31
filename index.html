@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <!-- <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> -->
-    <!-- <script src="node_modules/rivets/dist/rivets.bundled.min.js"></script> -->
+    <script src="node_modules/rivets/dist/rivets.bundled.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="config"></script>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -24,11 +24,13 @@
 <body>
     <div class="container text-center" id="divMain">
         <h1>
-            Tetris JS
+            Tetris JS 
+            <!-- <span rv-if="data.draw">drawing</span> -->
         </h1> 
-        <button class="btn btn-primary mt-2" onclick="myApp.btnClick()">Click Me</button><br>
+        <button class="btn btn-primary mt-2" onclick="myApp.btnClick()"
+        rv-text="data.getMessage | call data.draw"></button><br>
         <div id="mydiv" class="mt-4">
-            FPS: <span id="fps"></span>
+            FPS: <span rv-text="data.currentfps"></span>
         </div>
         <div id="gamediv" class="mb-4">
         </div>

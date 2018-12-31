@@ -10,7 +10,7 @@ define(["require", "exports"], function (require, exports) {
             this.lastCalledTime = new Date();
             this.fpscounter = 0;
             this.currentfps = 0;
-            // this.bindRivets();
+            this.bindRivets();
             this.createGameTable();
             this.initGame();
             requestAnimationFrame(this.requestNextFrame);
@@ -138,6 +138,12 @@ define(["require", "exports"], function (require, exports) {
             myApp.gameLoop();
             requestAnimationFrame(myApp.requestNextFrame);
         }
+        getMessage() {
+            if (!this.draw)
+                return 'start drawing';
+            else
+                return 'stop drawing';
+        }
         countFPS() {
             this.fpscounter++;
             let delta = (new Date().getTime() - this.lastCalledTime.getTime()) / 1000;
@@ -145,7 +151,7 @@ define(["require", "exports"], function (require, exports) {
                 this.currentfps = this.fpscounter;
                 this.fpscounter = 0;
                 this.lastCalledTime = new Date();
-                $("#fps").html(this.currentfps.toString());
+                // $("#fps").html(this.currentfps.toString());
             }
         }
         gameLoop() {
@@ -173,10 +179,14 @@ define(["require", "exports"], function (require, exports) {
                 // 
                 let x = parseInt(element.attributes["x"].value);
                 let y = parseInt(element.attributes["y"].value);
-                if (x == randBlock)
-                    element.innerHTML = "0";
-                else
-                    element.innerHTML = "x";
+                if (x == randBlock) {
+                    if (element.innerText != '0')
+                        element.innerText = "0";
+                }
+                else {
+                    if (element.innerText != 'x')
+                        element.innerText = "x";
+                }
             });
             elements.each(function (h, i) {
             });

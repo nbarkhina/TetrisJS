@@ -36,7 +36,7 @@ export class MyApp {
     paused = false;
 
     constructor() {
-        // this.bindRivets();
+        this.bindRivets();
         this.createGameTable();
         this.initGame();
 
@@ -193,6 +193,13 @@ export class MyApp {
         requestAnimationFrame(myApp.requestNextFrame);  
     }
 
+    getMessage():string{
+        if (!this.draw)
+            return 'start drawing';
+        else
+            return 'stop drawing';
+    }
+
 
     draw:boolean = false;
 
@@ -207,7 +214,7 @@ export class MyApp {
             this.currentfps = this.fpscounter;
             this.fpscounter = 0;
             this.lastCalledTime = new Date();
-            $("#fps").html(this.currentfps.toString());
+            // $("#fps").html(this.currentfps.toString());
         }
 
 
@@ -246,9 +253,16 @@ export class MyApp {
             let y = parseInt( element.attributes["y"].value );
 
             if (x==randBlock)
-                element.innerHTML = "0";
+            {
+                if (element.innerText!='0')
+                    element.innerText = "0";
+            }
             else
-                element.innerHTML = "x";
+            {
+                if (element.innerText!='x')
+                    element.innerText = "x";
+            }
+                
         });
 
 
