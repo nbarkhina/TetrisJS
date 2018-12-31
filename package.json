@@ -1,0 +1,23 @@
+{
+  "name": "temp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://neilb.visualstudio.com/Git%20Neil/_git/Typescript%20Starter"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/angular": "^1.6.53",
+    "@types/datatables.net": "^1.10.14",
+    "@types/toastr": "^2.1.35",
+    "angular": "^1.7.5",
+    "ejs": "^2.6.1",
+    "rivets": "^0.9.6"
+  }
+}
