@@ -41,6 +41,50 @@ export class MyApp {
         this.initGame();
 
         requestAnimationFrame(this.requestNextFrame);
+
+        
+
+        $('#divMain')[0].addEventListener( 'touchstart', this.touchStart, false );
+        $('#divMain')[0].addEventListener( 'touchend', this.touchEnd, false );
+        $('#divMain')[0].addEventListener( 'touchmove', this.touchMove, false );
+    }
+
+    touchDirection:string='';
+    touchX_Start:number=0;
+    touchY_Start:number=0;
+    lastTouch = new Date();
+
+    touchEnd(event:TouchEvent){
+        
+        let app = window.myApp as MyApp;
+        app.touchDirection = '';
+    }
+
+
+
+    touchStart(event:TouchEvent){
+        
+        let app = window.myApp as MyApp;
+
+        //PREVENT DOUBLE TAP ZOOM ON IOS
+        let delta = (new Date().getTime() - app.lastTouch.getTime());
+        if (delta<500)
+        {
+            event.preventDefault();
+        }
+        app.lastTouch = new Date();
+
+        app.touchX_Start = event.touches[0].clientX;
+        app.touchY_Start = event.touches[0].clientY;
+    }
+
+    touchMove(event:TouchEvent){
+        event.preventDefault();
+        let app = window.myApp as MyApp;
+        if (event.touches[0].clientX<app.touchX_Start)
+            app.touchDirection = 'left';
+        if (event.touches[0].clientX>app.touchX_Start)
+            app.touchDirection = 'right';
     }
 
     bindRivets() {
@@ -232,9 +276,9 @@ export class MyApp {
         let elements = $("[tetris-block]");
         let myElements:HTMLElement[] = [];
 
-        elements.each(function(h,i){
-            myElements.push(i);
-        });
+
+        for (let i = 0;i<elements.length;i++)
+            myElements.push(elements[i]);
 
         myElements.forEach(element => {
             xCounter++;
@@ -255,12 +299,21 @@ export class MyApp {
             if (x==randBlock)
             {
                 if (element.innerText!='0')
+                {
                     element.innerText = "0";
+                    element.style["background-color"] = 'green';
+                    // background-color:lightblue
+                }
+                    
             }
             else
             {
                 if (element.innerText!='x')
+                {
                     element.innerText = "x";
+                    element.style["background-color"] = 'lightblue';
+                }
+                    
             }
                 
         });
@@ -298,7 +351,8 @@ export class MyApp {
                 //     piece = i.toString();
 
                 tableHtml += "<td tetris-block x='" + j + "' y='" + i + 
-                    "' style='width:20px;height:30px;background-color:lightblue;'>" + piece + "</td>";
+                    "' style='width:20px;height:20px;background-color:lightblue;" +
+                    "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
             }
             tableHtml += "</tr>";
         }

@@ -28,16 +28,17 @@
 </style>
 <body>
     <div class="container text-center" id="divMain">
-        <h1>
+        <h3>
             Tetris JS 
             <!-- <span rv-if="data.draw">drawing</span> -->
-        </h1> 
-        <button class="btn btn-primary mt-2" onclick="myApp.btnClick()"
+        </h3> 
+        <button class="btn btn-primary" onclick="myApp.btnClick()"
         rv-text="data.getMessage | call data.draw"></button><br>
-        <div id="mydiv" class="mt-4">
-            FPS: <span rv-text="data.currentfps"></span>
+        <div id="mydiv" class="mt-2">
+            FPS: <span rv-text="data.currentfps"></span> 
+            Touch: <span rv-text="data.touchDirection"></span>
         </div>
-        <div id="gamediv" class="mb-4">
+        <div id="gamediv" class="mb-2">
         </div>
     </div>
 </body>

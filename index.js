@@ -6,6 +6,10 @@ define(["require", "exports"], function (require, exports) {
             this._lastFPS = new Date();
             this.keytimer = 0;
             this.paused = false;
+            this.touchDirection = '';
+            this.touchX_Start = 0;
+            this.touchY_Start = 0;
+            this.lastTouch = new Date();
             this.draw = false;
             this.lastCalledTime = new Date();
             this.fpscounter = 0;
@@ -14,6 +18,32 @@ define(["require", "exports"], function (require, exports) {
             this.createGameTable();
             this.initGame();
             requestAnimationFrame(this.requestNextFrame);
+            $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
+            $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
+            $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
+        }
+        touchEnd(event) {
+            let app = window.myApp;
+            app.touchDirection = '';
+        }
+        touchStart(event) {
+            let app = window.myApp;
+            //PREVENT DOUBLE TAP ZOOM ON IOS
+            let delta = (new Date().getTime() - app.lastTouch.getTime());
+            if (delta < 500) {
+                event.preventDefault();
+            }
+            app.lastTouch = new Date();
+            app.touchX_Start = event.touches[0].clientX;
+            app.touchY_Start = event.touches[0].clientY;
+        }
+        touchMove(event) {
+            event.preventDefault();
+            let app = window.myApp;
+            if (event.touches[0].clientX < app.touchX_Start)
+                app.touchDirection = 'left';
+            if (event.touches[0].clientX > app.touchX_Start)
+                app.touchDirection = 'right';
         }
         bindRivets() {
             rivets.bind($('body'), { data: this });
@@ -163,9 +193,8 @@ define(["require", "exports"], function (require, exports) {
             let randBlock = 0;
             let elements = $("[tetris-block]");
             let myElements = [];
-            elements.each(function (h, i) {
-                myElements.push(i);
-            });
+            for (let i = 0; i < elements.length; i++)
+                myElements.push(elements[i]);
             myElements.forEach(element => {
                 xCounter++;
                 let myApp = window.myApp;
@@ -180,12 +209,17 @@ define(["require", "exports"], function (require, exports) {
                 let x = parseInt(element.attributes["x"].value);
                 let y = parseInt(element.attributes["y"].value);
                 if (x == randBlock) {
-                    if (element.innerText != '0')
+                    if (element.innerText != '0') {
                         element.innerText = "0";
+                        element.style["background-color"] = 'green';
+                        // background-color:lightblue
+                    }
                 }
                 else {
-                    if (element.innerText != 'x')
+                    if (element.innerText != 'x') {
                         element.innerText = "x";
+                        element.style["background-color"] = 'lightblue';
+                    }
                 }
             });
             elements.each(function (h, i) {
@@ -211,7 +245,8 @@ define(["require", "exports"], function (require, exports) {
                     // if (j == 0)
                     //     piece = i.toString();
                     tableHtml += "<td tetris-block x='" + j + "' y='" + i +
-                        "' style='width:20px;height:30px;background-color:lightblue;'>" + piece + "</td>";
+                        "' style='width:20px;height:20px;background-color:lightblue;" +
+                        "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
                 }
                 tableHtml += "</tr>";
             }
