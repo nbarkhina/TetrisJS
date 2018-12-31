@@ -21,8 +21,47 @@ define(["require", "exports"], function (require, exports) {
             $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
             $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
             $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
+            // document.addEventListener( 'keypress', this.keyPress, false );
+            document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
+            document.onkeyup = this.keyUp;
             // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
             // document.getElementById('btnStart').ontouchmove = function(e){};
+        }
+        keyDown(event) {
+            let app = window.myApp;
+            // if (event.key=='ArrowLeft')
+            //     app.moveLeft();
+            // if (event.key=='ArrowRight')
+            //     app.moveRight();
+            // if (event.key=='ArrowDown')
+            //     app.moveDown();
+            // if (event.key=='ArrowUp')
+            //     app.rotate();
+            if (event.key == 'ArrowDown')
+                app.downKey = true;
+            if (event.key == 'ArrowLeft') {
+                app.leftKey = true;
+                app.keytimer++;
+            }
+            if (event.key == 'ArrowRight') {
+                app.rightKey = true;
+                app.keytimer++;
+            }
+        }
+        keyUp(event) {
+            let app = window.myApp;
+            if (event.key == 'ArrowUp')
+                app.upKey = true;
+            if (event.key == 'ArrowDown')
+                app.downKey = false;
+            if (event.key == 'ArrowLeft') {
+                app.leftKey = false;
+                app.keytimer = 0;
+            }
+            if (event.key == 'ArrowRight') {
+                app.rightKey = false;
+                app.keytimer = 0;
+            }
         }
         touchEnd(event) {
             let app = window.myApp;
@@ -53,36 +92,6 @@ define(["require", "exports"], function (require, exports) {
         }
         bindRivets() {
             rivets.bind($('body'), { data: this });
-        }
-        Tetris_KeyUp() {
-            //   if (e.Key == Key.Up)
-            //     upKey=true;
-            //   if (e.Key == Key.Down)
-            //     downKey=false;
-            //   if (e.Key == Key.Left)
-            //   {
-            //     leftKey=false;
-            //     keytimer = 0;
-            //   }
-            //   if (e.Key == Key.Right)
-            //   {
-            //     rightKey=false;
-            //     keytimer = 0;
-            //   }
-        }
-        Tetris_KeyDown() {
-            // if (e.Key == Key.Down)
-            //     downKey = true;
-            // if (e.Key == Key.Left)
-            // {
-            //     leftKey = true;
-            //     keytimer++;
-            // }
-            // if (e.Key == Key.Right)
-            // {
-            //     rightKey = true;
-            //     keytimer++;
-            // }
         }
         getRandomNumber(max) {
             return Math.floor(Math.random() * Math.floor(max));
@@ -172,11 +181,9 @@ define(["require", "exports"], function (require, exports) {
         gameLoop() {
             //program loop
             if (!this.startGame) {
-                this.newPaint();
                 return;
             }
             if (this.paused) {
-                this.newPaint();
                 return;
             }
             if (this.level == 1)
@@ -232,7 +239,6 @@ define(["require", "exports"], function (require, exports) {
                 this.timer = 0;
                 this.moveDown();
             }
-            this.newPaint();
         }
         gameover() {
             this.startGame = false;
@@ -253,8 +259,10 @@ define(["require", "exports"], function (require, exports) {
             for (let i = 0; i < 4; i++)
                 for (let j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
-            if (this.gameMatrix[1][4] != 0)
+            if (this.gameMatrix[1][4] != 0) {
                 this.gameover();
+                return;
+            }
             if (this.nextPiece == 1) {
                 this.nextPieceMatrix[1][4] = 1;
                 this.nextPieceMatrix[2][4] = 1;
@@ -812,12 +820,13 @@ define(["require", "exports"], function (require, exports) {
         // }
         /* MY FUNCTIONS */
         requestNextFrame() {
-            let myApp = window.myApp;
-            myApp.gameLoop();
-            requestAnimationFrame(myApp.requestNextFrame);
+            let app = window.myApp;
+            app.gameLoop();
+            app.newPaint();
+            requestAnimationFrame(app.requestNextFrame);
         }
         getMessage() {
-            return 'Click Me';
+            return 'New Game';
             // if (!this.draw)
             //     return 'start drawing';
             // else
@@ -833,6 +842,14 @@ define(["require", "exports"], function (require, exports) {
                 // $("#fps").html(this.currentfps.toString());
             }
         }
+        getRandomColor() {
+            var letters = '0123456789ABCDEF';
+            var color = '#';
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
         newPaint() {
             this.countFPS();
             let xCounter = -1;
@@ -842,19 +859,22 @@ define(["require", "exports"], function (require, exports) {
             let myElements = [];
             for (let i = 0; i < elements.length; i++)
                 myElements.push(elements[i]);
+            let randomColor = this.getRandomColor();
             myElements.forEach(element => {
                 xCounter++;
-                let myApp = window.myApp;
                 if (xCounter == 10) {
                     xCounter = 0;
                     yCounter++;
                 }
                 if (xCounter == 0) {
-                    randBlock = myApp.getRandomNumber(10);
+                    randBlock = this.getRandomNumber(10);
                 }
                 let x = parseInt(element.attributes["x"].value);
                 let y = parseInt(element.attributes["y"].value);
-                if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0) {
+                if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8) {
+                    element.style["background-color"] = randomColor;
+                }
+                else if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0) {
                     //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
                     element.style["background-color"] = 'blue';
                 }
@@ -884,11 +904,18 @@ define(["require", "exports"], function (require, exports) {
         }
         btnClick() {
             this.reset();
-            // $("#mydiv").html('button clicked');
-            // if (this.draw)
-            //     this.draw = false;
-            // else
-            //     this.draw = true;
+        }
+        btnPause() {
+            if (this.paused)
+                this.paused = false;
+            else
+                this.paused = true;
+        }
+        getPauseButtonText() {
+            if (this.paused)
+                return "Resume";
+            else
+                return "Pause";
         }
         createGameTable() {
             let tableHtml = '';
