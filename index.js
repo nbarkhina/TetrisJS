@@ -6,10 +6,14 @@ define(["require", "exports"], function (require, exports) {
             this._lastFPS = new Date();
             this.keytimer = 0;
             this.paused = false;
+            /* TOUCH CONTROLS */
             this.touchDirection = '';
             this.touchX_Start = 0;
             this.touchY_Start = 0;
+            this.touch_threshold = 30;
             this.lastTouch = new Date();
+            this.touchTimer = 0;
+            this.touchMoved = false;
             //draw:boolean = false;
             this.lastCalledTime = new Date();
             this.fpscounter = 0;
@@ -27,6 +31,7 @@ define(["require", "exports"], function (require, exports) {
             // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
             // document.getElementById('btnStart').ontouchmove = function(e){};
         }
+        /* KEYBOARD CONTROLS */
         keyDown(event) {
             let app = window.myApp;
             // if (event.key=='ArrowLeft')
@@ -63,14 +68,6 @@ define(["require", "exports"], function (require, exports) {
                 app.keytimer = 0;
             }
         }
-        touchEnd(event) {
-            let app = window.myApp;
-            if (app.touchDirection == 'left')
-                app.moveLeft();
-            if (app.touchDirection == 'right')
-                app.moveRight();
-            app.touchDirection = '';
-        }
         touchStart(event) {
             let app = window.myApp;
             //PREVENT DOUBLE TAP ZOOM ON IOS
@@ -81,14 +78,93 @@ define(["require", "exports"], function (require, exports) {
             app.lastTouch = new Date();
             app.touchX_Start = event.touches[0].clientX;
             app.touchY_Start = event.touches[0].clientY;
+            app.touchTimer = 0;
+            app.touchMoved = false;
         }
         touchMove(event) {
             event.preventDefault();
             let app = window.myApp;
-            if (event.touches[0].clientX < app.touchX_Start)
-                app.touchDirection = 'left';
-            if (event.touches[0].clientX > app.touchX_Start)
-                app.touchDirection = 'right';
+            let leftCounter = 0;
+            let rightCounter = 0;
+            let upCounter = 0;
+            let downCounter = 0;
+            if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
+                leftCounter = app.touchX_Start - event.touches[0].clientX;
+                // app.touchDirection = 'left';
+            }
+            if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
+                rightCounter = event.touches[0].clientX - app.touchX_Start;
+                // app.touchDirection = 'right';
+            }
+            if (event.touches[0].clientY < app.touchY_Start - app.touch_threshold) {
+                upCounter = app.touchY_Start - event.touches[0].clientY;
+                // app.touchDirection = 'up';
+            }
+            if (event.touches[0].clientY > app.touchY_Start + app.touch_threshold) {
+                downCounter = event.touches[0].clientY - app.touchY_Start;
+                // app.touchDirection = 'down';
+            }
+            if (leftCounter > 0 || rightCounter > 0 || upCounter > 0 || downCounter > 0) {
+                let greatest = app.findGreatest([leftCounter, rightCounter, upCounter, downCounter]);
+                if (greatest == 0)
+                    app.touchDirection = 'left';
+                if (greatest == 1)
+                    app.touchDirection = 'right';
+                if (greatest == 2)
+                    app.touchDirection = 'up';
+                if (greatest == 3)
+                    app.touchDirection = 'down';
+            }
+            if (app.touchDirection == 'left') {
+                app.touchTimer++;
+                if (app.touchTimer > 3) {
+                    app.moveLeft();
+                    app.touchTimer = 0;
+                    app.touchMoved = true;
+                }
+            }
+            if (app.touchDirection == 'right') {
+                app.touchTimer++;
+                if (app.touchTimer > 3) {
+                    app.moveRight();
+                    app.touchTimer = 0;
+                    app.touchMoved = true;
+                }
+            }
+        }
+        touchEnd(event) {
+            let app = window.myApp;
+            if (app.touchDirection == 'left') {
+                if (!app.touchMoved)
+                    app.moveLeft();
+            }
+            if (app.touchDirection == 'right') {
+                if (!app.touchMoved)
+                    app.moveRight();
+            }
+            if (app.touchDirection == 'up')
+                app.rotate();
+            if (app.touchDirection == 'down') {
+                app.drop();
+            }
+            if (app.touchDirection == '')
+                app.rotate();
+            // app.downKey = false;
+            app.touchDirection = '';
+            app.leftKey = false;
+            app.rightKey = false;
+            app.keytimer = 0;
+        }
+        findGreatest(nums) {
+            let greatest = 0;
+            let greatestIndex = 0;
+            for (let i = 0; i < nums.length; i++) {
+                if (nums[i] > greatest) {
+                    greatestIndex = i;
+                    greatest = nums[i];
+                }
+            }
+            return greatestIndex;
         }
         bindRivets() {
             rivets.bind($('body'), { data: this });
@@ -410,6 +486,11 @@ define(["require", "exports"], function (require, exports) {
                         }
                     }
                 }
+            }
+        }
+        drop() {
+            while (this.toMakePiece == false) {
+                this.moveDown();
             }
         }
         moveDown() {
