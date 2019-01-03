@@ -1,8 +1,8 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
-    class MyApp {
-        constructor() {
+    var MyApp = /** @class */ (function () {
+        function MyApp() {
             this._lastFPS = new Date();
             this.keytimer = 0;
             this.paused = false;
@@ -10,7 +10,7 @@ define(["require", "exports"], function (require, exports) {
             this.touchDirection = '';
             this.touchX_Start = 0;
             this.touchY_Start = 0;
-            this.touch_threshold = 30;
+            this.touch_threshold = 20;
             this.lastTouch = new Date();
             this.touchTimer = 0;
             this.touchMoved = false;
@@ -22,9 +22,9 @@ define(["require", "exports"], function (require, exports) {
             this.createGameTable();
             this.initGame();
             requestAnimationFrame(this.requestNextFrame);
-            $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
-            $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
-            $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
+            $('#gamediv')[0].addEventListener('touchstart', this.touchStart, false);
+            $('#gamediv')[0].addEventListener('touchend', this.touchEnd, false);
+            $('#gamediv')[0].addEventListener('touchmove', this.touchMove, false);
             // document.addEventListener( 'keypress', this.keyPress, false );
             document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
             document.onkeyup = this.keyUp;
@@ -32,8 +32,8 @@ define(["require", "exports"], function (require, exports) {
             // document.getElementById('btnStart').ontouchmove = function(e){};
         }
         /* KEYBOARD CONTROLS */
-        keyDown(event) {
-            let app = window.myApp;
+        MyApp.prototype.keyDown = function (event) {
+            var app = window.myApp;
             // if (event.key=='ArrowLeft')
             //     app.moveLeft();
             // if (event.key=='ArrowRight')
@@ -42,36 +42,39 @@ define(["require", "exports"], function (require, exports) {
             //     app.moveDown();
             // if (event.key=='ArrowUp')
             //     app.rotate();
-            if (event.key == 'ArrowDown')
+            if (event.key == 'ArrowDown' || event.key == 'Down')
                 app.downKey = true;
-            if (event.key == 'ArrowLeft') {
+            if (event.key == 'ArrowLeft' || event.key == 'Left') {
                 app.leftKey = true;
                 app.keytimer++;
             }
-            if (event.key == 'ArrowRight') {
+            if (event.key == 'ArrowRight' || event.key == 'Right') {
                 app.rightKey = true;
                 app.keytimer++;
             }
-        }
-        keyUp(event) {
-            let app = window.myApp;
-            if (event.key == 'ArrowUp')
+        };
+        MyApp.prototype.keyUp = function (event) {
+            var app = window.myApp;
+            console.log(event);
+            if (event.key == 'a')
+                app.drop();
+            if (event.key == 'ArrowUp' || event.key == 'Up')
                 app.upKey = true;
-            if (event.key == 'ArrowDown')
+            if (event.key == 'ArrowDown' || event.key == 'Down')
                 app.downKey = false;
-            if (event.key == 'ArrowLeft') {
+            if (event.key == 'ArrowLeft' || event.key == 'Left') {
                 app.leftKey = false;
                 app.keytimer = 0;
             }
-            if (event.key == 'ArrowRight') {
+            if (event.key == 'ArrowRight' || event.key == 'Right') {
                 app.rightKey = false;
                 app.keytimer = 0;
             }
-        }
-        touchStart(event) {
-            let app = window.myApp;
+        };
+        MyApp.prototype.touchStart = function (event) {
+            var app = window.myApp;
             //PREVENT DOUBLE TAP ZOOM ON IOS
-            let delta = (new Date().getTime() - app.lastTouch.getTime());
+            var delta = (new Date().getTime() - app.lastTouch.getTime());
             if (delta < 500) {
                 event.preventDefault();
             }
@@ -80,14 +83,14 @@ define(["require", "exports"], function (require, exports) {
             app.touchY_Start = event.touches[0].clientY;
             app.touchTimer = 0;
             app.touchMoved = false;
-        }
-        touchMove(event) {
+        };
+        MyApp.prototype.touchMove = function (event) {
             event.preventDefault();
-            let app = window.myApp;
-            let leftCounter = 0;
-            let rightCounter = 0;
-            let upCounter = 0;
-            let downCounter = 0;
+            var app = window.myApp;
+            var leftCounter = 0;
+            var rightCounter = 0;
+            var upCounter = 0;
+            var downCounter = 0;
             if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
                 leftCounter = app.touchX_Start - event.touches[0].clientX;
                 // app.touchDirection = 'left';
@@ -105,7 +108,7 @@ define(["require", "exports"], function (require, exports) {
                 // app.touchDirection = 'down';
             }
             if (leftCounter > 0 || rightCounter > 0 || upCounter > 0 || downCounter > 0) {
-                let greatest = app.findGreatest([leftCounter, rightCounter, upCounter, downCounter]);
+                var greatest = app.findGreatest([leftCounter, rightCounter, upCounter, downCounter]);
                 if (greatest == 0)
                     app.touchDirection = 'left';
                 if (greatest == 1)
@@ -115,67 +118,76 @@ define(["require", "exports"], function (require, exports) {
                 if (greatest == 3)
                     app.touchDirection = 'down';
             }
+            // if (app.touchDirection == 'left')
+            // {
+            //     app.touchTimer++;
+            //     if (app.touchTimer>3)
+            //     {
+            //         app.moveLeft();
+            //         app.touchTimer = 0;
+            //         app.touchMoved = true;
+            //     }
+            // }
+            // if (app.touchDirection == 'right')
+            // {
+            //     app.touchTimer++;
+            //     if (app.touchTimer>3)
+            //     {
+            //         app.moveRight();
+            //         app.touchTimer = 0;
+            //         app.touchMoved = true;
+            //     }
+            // }
+        };
+        MyApp.prototype.touchEnd = function (event) {
+            var app = window.myApp;
+            if (app.paused)
+                return;
             if (app.touchDirection == 'left') {
-                app.touchTimer++;
-                if (app.touchTimer > 3) {
-                    app.moveLeft();
-                    app.touchTimer = 0;
-                    app.touchMoved = true;
-                }
+                // if (!app.touchMoved)
+                app.moveLeft();
             }
             if (app.touchDirection == 'right') {
-                app.touchTimer++;
-                if (app.touchTimer > 3) {
-                    app.moveRight();
-                    app.touchTimer = 0;
-                    app.touchMoved = true;
-                }
+                // if (!app.touchMoved)
+                app.moveRight();
             }
-        }
-        touchEnd(event) {
-            let app = window.myApp;
-            if (app.touchDirection == 'left') {
-                if (!app.touchMoved)
-                    app.moveLeft();
-            }
-            if (app.touchDirection == 'right') {
-                if (!app.touchMoved)
-                    app.moveRight();
-            }
-            if (app.touchDirection == 'up')
-                app.rotate();
+            // if (app.touchDirection=='up')
+            //     app.rotate();
             if (app.touchDirection == 'down') {
                 app.drop();
             }
-            if (app.touchDirection == '')
+            if (app.touchDirection == '') {
+                // let xDistance = Math.abs(event.touches[0].clientX-this.touchX_Start);
+                // let yDistance = Math.abs(event.touches[0].clientY-this.touchY_Start);
+                // if (xDistance+yDistance<8)
                 app.rotate();
+            }
             // app.downKey = false;
             app.touchDirection = '';
-            app.leftKey = false;
-            app.rightKey = false;
-            app.keytimer = 0;
-        }
-        findGreatest(nums) {
-            let greatest = 0;
-            let greatestIndex = 0;
-            for (let i = 0; i < nums.length; i++) {
+            // app.leftKey = false;
+            // app.rightKey = false;
+        };
+        MyApp.prototype.findGreatest = function (nums) {
+            var greatest = 0;
+            var greatestIndex = 0;
+            for (var i = 0; i < nums.length; i++) {
                 if (nums[i] > greatest) {
                     greatestIndex = i;
                     greatest = nums[i];
                 }
             }
             return greatestIndex;
-        }
-        bindRivets() {
+        };
+        MyApp.prototype.bindRivets = function () {
             rivets.bind($('body'), { data: this });
-        }
-        getRandomNumber(max) {
+        };
+        MyApp.prototype.getRandomNumber = function (max) {
             return Math.floor(Math.random() * Math.floor(max));
-        }
-        newGame_Click() {
+        };
+        MyApp.prototype.newGame_Click = function () {
             this.reset();
-        }
-        initGame() {
+        };
+        MyApp.prototype.initGame = function () {
             // this.currentTime = new Date();
             this.fps = 0;
             this.gameOver = false;
@@ -199,30 +211,30 @@ define(["require", "exports"], function (require, exports) {
             this.gameMatrix = [];
             this.gameMatrixBuffer = [];
             this.delay = 32;
-            for (let i = 0; i < 20; i++) {
-                let arr1 = [];
-                let arr2 = [];
+            for (var i = 0; i < 20; i++) {
+                var arr1 = [];
+                var arr2 = [];
                 this.gameMatrix.push(arr1);
                 this.gameMatrixBuffer.push(arr2);
-                for (let j = 0; j < 10; j++) {
+                for (var j = 0; j < 10; j++) {
                     this.gameMatrix[i][j] = 0;
                     this.gameMatrixBuffer[i][j] = 0;
                 }
             }
             this.nextPieceMatrix = [];
-            for (let i = 0; i < 4; i++) {
-                let arr3 = [];
+            for (var i = 0; i < 4; i++) {
+                var arr3 = [];
                 this.nextPieceMatrix.push(arr3);
-                for (let j = 0; j < 7; j++)
+                for (var j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
             }
-        }
-        reset() {
+        };
+        MyApp.prototype.reset = function () {
             this.paused = false;
             this.gameOver = false;
             this.startGame = true;
-            for (let i = 0; i < 4; i++) {
-                for (let j = 0; j < 7; j++)
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
             }
             this.nextLevel = 0;
@@ -243,18 +255,18 @@ define(["require", "exports"], function (require, exports) {
             this.rightKey = false;
             this.gameMatrix = [];
             this.gameMatrixBuffer = [];
-            for (let i = 0; i < 20; i++) {
-                let arr1 = [];
-                let arr2 = [];
+            for (var i = 0; i < 20; i++) {
+                var arr1 = [];
+                var arr2 = [];
                 this.gameMatrix.push(arr1);
                 this.gameMatrixBuffer.push(arr2);
-                for (let j = 0; j < 10; j++) {
+                for (var j = 0; j < 10; j++) {
                     this.gameMatrix[i][j] = 0;
                     this.gameMatrixBuffer[i][j] = 0;
                 }
             }
-        }
-        gameLoop() {
+        };
+        MyApp.prototype.gameLoop = function () {
             //program loop
             if (!this.startGame) {
                 return;
@@ -315,25 +327,26 @@ define(["require", "exports"], function (require, exports) {
                 this.timer = 0;
                 this.moveDown();
             }
-        }
-        gameover() {
+            this.findShadow();
+        };
+        MyApp.prototype.gameover = function () {
             this.startGame = false;
-            for (let i = 0; i < 4; i++)
-                for (let j = 0; j < 7; j++)
+            for (var i = 0; i < 4; i++)
+                for (var j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
-            for (let i = 0; i < 20; i++) {
-                for (let j = 0; j < 10; j++) {
+            for (var i = 0; i < 20; i++) {
+                for (var j = 0; j < 10; j++) {
                     this.gameMatrix[i][j] = 0;
                     this.gameMatrixBuffer[i][j] = 0;
                 }
             }
             this.gameOver = true;
-        }
-        makePiece() {
+        };
+        MyApp.prototype.makePiece = function () {
             this.piece = this.nextPiece;
             this.nextPiece = this.getRandomNumber(7) + 1;
-            for (let i = 0; i < 4; i++)
-                for (let j = 0; j < 7; j++)
+            for (var i = 0; i < 4; i++)
+                for (var j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
             if (this.gameMatrix[1][4] != 0) {
                 this.gameover();
@@ -443,11 +456,11 @@ define(["require", "exports"], function (require, exports) {
             }
             if (this.gameMatrix[1][4] != 0)
                 this.gameover();
-        }
-        moveLeft() {
-            let success = true;
-            for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 20; j++) {
+        };
+        MyApp.prototype.moveLeft = function () {
+            var success = true;
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 20; j++) {
                     if (this.gameMatrixBuffer[j][i] != 0 && i == 0)
                         success = false;
                     if (this.gameMatrixBuffer[j][i] != 0 && i != 0 && this.gameMatrix[j][i - 1] != 0)
@@ -456,8 +469,8 @@ define(["require", "exports"], function (require, exports) {
             }
             if (success) {
                 this.centX -= 1;
-                for (let i = 1; i < 10; i++) {
-                    for (let j = 0; j < 20; j++) {
+                for (var i = 1; i < 10; i++) {
+                    for (var j = 0; j < 20; j++) {
                         if (this.gameMatrixBuffer[j][i] != 0) {
                             this.gameMatrixBuffer[j][i - 1] = this.gameMatrixBuffer[j][i];
                             this.gameMatrixBuffer[j][i] = 0;
@@ -465,11 +478,11 @@ define(["require", "exports"], function (require, exports) {
                     }
                 }
             }
-        }
-        moveRight() {
-            let success = true;
-            for (let i = 9; i > -1; i--) {
-                for (let j = 0; j < 20; j++) {
+        };
+        MyApp.prototype.moveRight = function () {
+            var success = true;
+            for (var i = 9; i > -1; i--) {
+                for (var j = 0; j < 20; j++) {
                     if (this.gameMatrixBuffer[j][i] != 0 && i == 9)
                         success = false;
                     if (this.gameMatrixBuffer[j][i] != 0 && i != 9 && this.gameMatrix[j][i + 1] != 0)
@@ -478,8 +491,8 @@ define(["require", "exports"], function (require, exports) {
             }
             if (success) {
                 this.centX += 1;
-                for (let i = 8; i > -1; i--) {
-                    for (let j = 0; j < 20; j++) {
+                for (var i = 8; i > -1; i--) {
+                    for (var j = 0; j < 20; j++) {
                         if (this.gameMatrixBuffer[j][i] != 0) {
                             this.gameMatrixBuffer[j][i + 1] = this.gameMatrixBuffer[j][i];
                             this.gameMatrixBuffer[j][i] = 0;
@@ -487,16 +500,60 @@ define(["require", "exports"], function (require, exports) {
                     }
                 }
             }
-        }
-        drop() {
+        };
+        MyApp.prototype.drop = function () {
             while (this.toMakePiece == false) {
                 this.moveDown();
             }
-        }
-        moveDown() {
-            let success = true;
-            for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 20; j++) {
+        };
+        MyApp.prototype.findShadow = function () {
+            //initialize shadowFinderMatrix
+            if (!this.shadowFinderMatrix) {
+                this.shadowFinderMatrix = [];
+                for (var i = 0; i < 20; i++) {
+                    var arr1 = [];
+                    this.shadowFinderMatrix.push(arr1);
+                    for (var j = 0; j < 10; j++) {
+                        this.shadowFinderMatrix[i][j] = 0;
+                    }
+                }
+            }
+            //copy gameMatrixBuffer to shadowFinderMatrix
+            for (var i = 0; i < 20; i++) {
+                for (var j = 0; j < 10; j++) {
+                    this.shadowFinderMatrix[i][j] = this.gameMatrixBuffer[i][j];
+                }
+            }
+            var shadowFound = false;
+            var preventInfiniteLoopCounter = 0;
+            while (shadowFound == false) {
+                preventInfiniteLoopCounter++;
+                if (preventInfiniteLoopCounter > 20)
+                    break;
+                for (var i = 0; i < 10; i++) {
+                    for (var j = 0; j < 20; j++) {
+                        if (this.shadowFinderMatrix[j][i] != 0 && j == 19)
+                            shadowFound = true;
+                        if (this.shadowFinderMatrix[j][i] != 0 && j != 19 && this.gameMatrix[j + 1][i] != 0)
+                            shadowFound = true;
+                    }
+                }
+                if (!shadowFound) {
+                    for (var i = 19; i > -1; i--) {
+                        for (var j = 0; j < 10; j++) {
+                            if (this.shadowFinderMatrix[i][j] != 0) {
+                                this.shadowFinderMatrix[i + 1][j] = this.shadowFinderMatrix[i][j];
+                                this.shadowFinderMatrix[i][j] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+        MyApp.prototype.moveDown = function () {
+            var success = true;
+            for (var i = 0; i < 10; i++) {
+                for (var j = 0; j < 20; j++) {
                     if (this.gameMatrixBuffer[j][i] != 0 && j == 19)
                         success = false;
                     if (this.gameMatrixBuffer[j][i] != 0 && j != 19 && this.gameMatrix[j + 1][i] != 0)
@@ -505,8 +562,8 @@ define(["require", "exports"], function (require, exports) {
             }
             if (success) {
                 this.centY += 1;
-                for (let i = 19; i > -1; i--) {
-                    for (let j = 0; j < 10; j++) {
+                for (var i = 19; i > -1; i--) {
+                    for (var j = 0; j < 10; j++) {
                         if (this.gameMatrixBuffer[i][j] != 0) {
                             this.gameMatrixBuffer[i + 1][j] = this.gameMatrixBuffer[i][j];
                             this.gameMatrixBuffer[i][j] = 0;
@@ -516,8 +573,8 @@ define(["require", "exports"], function (require, exports) {
                 this.timer = 0;
             }
             else {
-                for (let i = 0; i < 20; i++) {
-                    for (let j = 0; j < 10; j++) {
+                for (var i = 0; i < 20; i++) {
+                    for (var j = 0; j < 10; j++) {
                         if (this.gameMatrixBuffer[i][j] != 0) {
                             this.gameMatrix[i][j] = this.gameMatrixBuffer[i][j];
                             this.gameMatrixBuffer[i][j] = 0;
@@ -527,8 +584,8 @@ define(["require", "exports"], function (require, exports) {
                 this.toMakePiece = true;
                 this.timer = -1;
             }
-        }
-        rotate() {
+        };
+        MyApp.prototype.rotate = function () {
             if (this.piece == 1) {
                 if (this.state == 1) {
                     if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0) {
@@ -733,16 +790,16 @@ define(["require", "exports"], function (require, exports) {
                     }
                 }
             } //this.piece 7
-        }
-        checkMatrix() {
-            for (let i = 0; i < 20; i++) {
-                let temp = true;
-                for (let j = 0; j < 10; j++) {
+        };
+        MyApp.prototype.checkMatrix = function () {
+            for (var i = 0; i < 20; i++) {
+                var temp = true;
+                for (var j = 0; j < 10; j++) {
                     if (this.gameMatrix[i][j] == 0)
                         temp = false;
                 }
                 if (temp) {
-                    for (let k = 0; k < 10; k++)
+                    for (var k = 0; k < 10; k++)
                         this.gameMatrix[i][k] = 8;
                     this.toClear = true;
                 }
@@ -753,15 +810,15 @@ define(["require", "exports"], function (require, exports) {
                 //TODO dropblock.play();
                 this.score++;
             }
-        }
-        clearBlocks() {
-            let tempLines = 0;
-            for (let i = 0; i < 20; i++) {
-                let temp = false;
-                for (let j = 0; j < 10; j++) {
+        };
+        MyApp.prototype.clearBlocks = function () {
+            var tempLines = 0;
+            for (var i = 0; i < 20; i++) {
+                var temp = false;
+                for (var j = 0; j < 10; j++) {
                     if (this.gameMatrix[i][j] == 8) {
                         temp = true;
-                        for (let k = i; k > 0; k--) {
+                        for (var k = i; k > 0; k--) {
                             this.gameMatrix[k][j] = this.gameMatrix[k - 1][j];
                         }
                         this.gameMatrix[0][j] = 0;
@@ -787,7 +844,7 @@ define(["require", "exports"], function (require, exports) {
             }
             else
                 ; //TODO blockcleared.play();
-        }
+        };
         // public void paint()
         // {
         //     if (this.paused)
@@ -900,65 +957,68 @@ define(["require", "exports"], function (require, exports) {
         //     }
         // }
         /* MY FUNCTIONS */
-        requestNextFrame() {
-            let app = window.myApp;
+        MyApp.prototype.requestNextFrame = function () {
+            var app = window.myApp;
             app.gameLoop();
             app.newPaint();
             requestAnimationFrame(app.requestNextFrame);
-        }
-        getMessage() {
+        };
+        MyApp.prototype.getMessage = function () {
             return 'New Game';
             // if (!this.draw)
             //     return 'start drawing';
             // else
             //     return 'stop drawing';
-        }
-        countFPS() {
+        };
+        MyApp.prototype.countFPS = function () {
             this.fpscounter++;
-            let delta = (new Date().getTime() - this.lastCalledTime.getTime()) / 1000;
+            var delta = (new Date().getTime() - this.lastCalledTime.getTime()) / 1000;
             if (delta > 1) {
                 this.currentfps = this.fpscounter;
                 this.fpscounter = 0;
                 this.lastCalledTime = new Date();
                 // $("#fps").html(this.currentfps.toString());
             }
-        }
-        getRandomColor() {
+        };
+        MyApp.prototype.getRandomColor = function () {
             var letters = '0123456789ABCDEF';
             var color = '#';
             for (var i = 0; i < 6; i++) {
                 color += letters[Math.floor(Math.random() * 16)];
             }
             return color;
-        }
-        newPaint() {
+        };
+        MyApp.prototype.newPaint = function () {
+            var _this = this;
             this.countFPS();
-            let xCounter = -1;
-            let yCounter = 0;
-            let randBlock = 0;
-            let elements = $("[tetris-block]");
-            let myElements = [];
-            for (let i = 0; i < elements.length; i++)
+            var xCounter = -1;
+            var yCounter = 0;
+            var randBlock = 0;
+            var elements = $("[tetris-block]");
+            var myElements = [];
+            for (var i = 0; i < elements.length; i++)
                 myElements.push(elements[i]);
-            let randomColor = this.getRandomColor();
-            myElements.forEach(element => {
+            var randomColor = this.getRandomColor();
+            myElements.forEach(function (element) {
                 xCounter++;
                 if (xCounter == 10) {
                     xCounter = 0;
                     yCounter++;
                 }
                 if (xCounter == 0) {
-                    randBlock = this.getRandomNumber(10);
+                    randBlock = _this.getRandomNumber(10);
                 }
-                let x = parseInt(element.attributes["x"].value);
-                let y = parseInt(element.attributes["y"].value);
-                if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8) {
+                var x = parseInt(element.attributes["x"].value);
+                var y = parseInt(element.attributes["y"].value);
+                if (_this.gameMatrixBuffer[y][x] == 8 || _this.gameMatrix[y][x] == 8) {
                     element.style["background-color"] = randomColor;
                 }
-                else if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0) {
+                else if (_this.gameMatrixBuffer[y][x] > 0 || _this.gameMatrix[y][x] > 0) {
                     //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
                     element.style["background-color"] = 'blue';
                 }
+                else if (_this.shadowFinderMatrix && _this.shadowFinderMatrix[y][x] > 0)
+                    element.style["background-color"] = 'grey';
                 else
                     element.style["background-color"] = 'white';
                 // if (x==randBlock)
@@ -982,29 +1042,29 @@ define(["require", "exports"], function (require, exports) {
             elements.each(function (h, i) {
             });
             // console.log(this.counter);
-        }
-        btnClick() {
+        };
+        MyApp.prototype.btnClick = function () {
             this.reset();
-        }
-        btnPause() {
+        };
+        MyApp.prototype.btnPause = function () {
             if (this.paused)
                 this.paused = false;
             else
                 this.paused = true;
-        }
-        getPauseButtonText() {
+        };
+        MyApp.prototype.getPauseButtonText = function () {
             if (this.paused)
                 return "Resume";
             else
                 return "Pause";
-        }
-        createGameTable() {
-            let tableHtml = '';
+        };
+        MyApp.prototype.createGameTable = function () {
+            var tableHtml = '';
             tableHtml += '<table style="margin: 0px auto;">';
-            for (let i = 0; i < 20; i++) {
+            for (var i = 0; i < 20; i++) {
                 tableHtml += "<tr>";
-                for (let j = 0; j < 10; j++) {
-                    let piece = 'x';
+                for (var j = 0; j < 10; j++) {
+                    var piece = ' ';
                     // if (i==5)
                     //     piece = '';
                     // if (j == 0)
@@ -1017,8 +1077,13 @@ define(["require", "exports"], function (require, exports) {
             }
             tableHtml += "</table>";
             $("#gamediv").html(tableHtml);
-        }
-    }
+            var gameDivHeight = $("#gamediv").height();
+            var windowHeight = window.innerHeight;
+            // console.log(gameDivHeight,windowHeight);
+            // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
+        };
+        return MyApp;
+    }());
     exports.MyApp = MyApp;
     window.myApp = new MyApp();
 });

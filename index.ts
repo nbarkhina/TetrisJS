@@ -44,9 +44,9 @@ export class MyApp {
 
         
 
-        $('#divMain')[0].addEventListener( 'touchstart', this.touchStart, false );
-        $('#divMain')[0].addEventListener( 'touchend', this.touchEnd, false );
-        $('#divMain')[0].addEventListener( 'touchmove', this.touchMove, false );
+        $('#gamediv')[0].addEventListener( 'touchstart', this.touchStart, false );
+        $('#gamediv')[0].addEventListener( 'touchend', this.touchEnd, false );
+        $('#gamediv')[0].addEventListener( 'touchmove', this.touchMove, false );
 
         // document.addEventListener( 'keypress', this.keyPress, false );
         document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
@@ -71,15 +71,15 @@ export class MyApp {
         // if (event.key=='ArrowUp')
         //     app.rotate();
 
-        if (event.key=='ArrowDown')
+        if (event.key=='ArrowDown' || event.key=='Down')
             app.downKey = true;
 
-        if (event.key=='ArrowLeft')
+        if (event.key=='ArrowLeft' || event.key=='Left')
         {
             app.leftKey = true;
             app.keytimer++;
         }
-        if (event.key=='ArrowRight')
+        if (event.key=='ArrowRight' || event.key=='Right')
         {
             app.rightKey = true;
             app.keytimer++;
@@ -90,19 +90,23 @@ export class MyApp {
     keyUp(event:KeyboardEvent)
     {
         let app = window.myApp as MyApp;
+        console.log(event);
 
-        if (event.key=='ArrowUp')
+        if (event.key=='a')
+            app.drop();
+
+        if (event.key=='ArrowUp' || event.key=='Up')
             app.upKey=true;
 
-        if (event.key=='ArrowDown')
+        if (event.key=='ArrowDown' || event.key=='Down')
             app.downKey=false;
 
-        if (event.key=='ArrowLeft')
+        if (event.key=='ArrowLeft' || event.key=='Left')
         {
             app.leftKey=false;
             app.keytimer = 0;
         }
-        if (event.key=='ArrowRight')
+        if (event.key=='ArrowRight' || event.key=='Right') 
         {
             app.rightKey=false;
             app.keytimer = 0;
@@ -114,7 +118,7 @@ export class MyApp {
     touchDirection:string='';
     touchX_Start:number=0;
     touchY_Start:number=0;
-    touch_threshold:number=30;
+    touch_threshold:number=20;
     lastTouch = new Date();
     touchTimer = 0;
     touchMoved = false;
@@ -174,55 +178,65 @@ export class MyApp {
             if (greatest==3) app.touchDirection = 'down';
         }
 
-        if (app.touchDirection == 'left')
-        {
-            app.touchTimer++;
-            if (app.touchTimer>3)
-            {
-                app.moveLeft();
-                app.touchTimer = 0;
-                app.touchMoved = true;
-            }
-        }
-        if (app.touchDirection == 'right')
-        {
-            app.touchTimer++;
-            if (app.touchTimer>3)
-            {
-                app.moveRight();
-                app.touchTimer = 0;
-                app.touchMoved = true;
-            }
-        }
+        // if (app.touchDirection == 'left')
+        // {
+        //     app.touchTimer++;
+        //     if (app.touchTimer>3)
+        //     {
+        //         app.moveLeft();
+        //         app.touchTimer = 0;
+        //         app.touchMoved = true;
+        //     }
+        // }
+        // if (app.touchDirection == 'right')
+        // {
+        //     app.touchTimer++;
+        //     if (app.touchTimer>3)
+        //     {
+        //         app.moveRight();
+        //         app.touchTimer = 0;
+        //         app.touchMoved = true;
+        //     }
+        // }
         
     }
 
     touchEnd(event:TouchEvent){
         
+        
         let app = window.myApp as MyApp;
+        if (app.paused)
+            return;
+
         if (app.touchDirection=='left')
         {
-            if (!app.touchMoved)
+            // if (!app.touchMoved)
                 app.moveLeft();
         }
         if (app.touchDirection=='right')
         {
-            if (!app.touchMoved)
+            // if (!app.touchMoved)
                 app.moveRight();
         }
-        if (app.touchDirection=='up')
-            app.rotate();
+        // if (app.touchDirection=='up')
+        //     app.rotate();
         if (app.touchDirection=='down')
         {
             app.drop();
         }
         if (app.touchDirection=='')
-            app.rotate();
+        {
+            // let xDistance = Math.abs(event.touches[0].clientX-this.touchX_Start);
+            // let yDistance = Math.abs(event.touches[0].clientY-this.touchY_Start);
+            // if (xDistance+yDistance<8)
+                app.rotate();
+        }
+            
         // app.downKey = false;
         app.touchDirection = '';
-        app.leftKey = false;
-        app.rightKey = false;
-        app.keytimer = 0;
+        // app.leftKey = false;
+        // app.rightKey = false;
+        
     }
 
     findGreatest(nums:number[]):number
@@ -364,29 +378,29 @@ export class MyApp {
         if (this.level == 1)
             this.levelSpeed = 30;
         if (this.level == 2)
-        this.levelSpeed = 25;
+            this.levelSpeed = 25;
         if (this.level == 3)
-        this.levelSpeed = 20;
+            this.levelSpeed = 20;
         if (this.level == 4)
-        this.levelSpeed = 17;
+            this.levelSpeed = 17;
         if (this.level == 5)
-        this.levelSpeed = 14;
+            this.levelSpeed = 14;
         if (this.level == 6)
-        this.levelSpeed = 10;
+            this.levelSpeed = 10;
         if (this.level == 7)
-        this.levelSpeed = 8;
+            this.levelSpeed = 8;
         if (this.level == 8)
-        this.levelSpeed = 5;
+            this.levelSpeed = 5;
         if (this.level == 9)
-        this.levelSpeed = 3;
+            this.levelSpeed = 3;
         if (this.level == 10)
-        this.levelSpeed = 2;
+            this.levelSpeed = 2;
         if (this.timer == -1)
-        this.checkMatrix();
+            this.checkMatrix();
         if (this.toClear)
-        this.timer--;
+            this.timer--;
         else
-        this.timer++;
+            this.timer++;
         if (this.timer == -24)
         {
             this.clearBlocks();
@@ -422,6 +436,8 @@ export class MyApp {
             this.timer = 0;
             this.moveDown();
         }
+
+        this.findShadow();
 
         
     } 
@@ -642,6 +658,66 @@ export class MyApp {
         while(this.toMakePiece==false)
         {
             this.moveDown();
+        }
+
+    }
+
+    shadowFinderMatrix: number[][];
+
+    findShadow()
+    {
+        //initialize shadowFinderMatrix
+        if (!this.shadowFinderMatrix)
+        {
+            this.shadowFinderMatrix = [];
+            for (let i = 0; i < 20; i++) {
+                let arr1: number[] = [];
+                this.shadowFinderMatrix.push(arr1);
+                for (let j = 0; j < 10; j++) {
+                    this.shadowFinderMatrix[i][j] = 0;
+                }
+            }
+        }
+
+        //copy gameMatrixBuffer to shadowFinderMatrix
+        for (let i = 0; i < 20; i++) {
+            for (let j = 0; j < 10; j++) {
+                this.shadowFinderMatrix[i][j] = this.gameMatrixBuffer[i][j];
+            }
+        }
+
+        let shadowFound = false;
+        let preventInfiniteLoopCounter = 0;
+        while(shadowFound==false)
+        {
+            preventInfiniteLoopCounter++;
+            if (preventInfiniteLoopCounter>20)
+                break;
+            
+            for (let i = 0; i < 10; i++)
+            {
+                for (let j = 0; j < 20; j++)
+                {
+                    if (this.shadowFinderMatrix[j][i] != 0 && j == 19)
+                        shadowFound = true;
+                    if (this.shadowFinderMatrix[j][i] != 0 && j != 19 && this.gameMatrix[j + 1][i] != 0)
+                        shadowFound = true;
+                }
+            }
+            if (!shadowFound)
+            {
+                for (let i = 19; i > -1; i--)
+                {
+                    for (let j = 0; j < 10; j++)
+                    {
+                        if (this.shadowFinderMatrix[i][j] != 0)
+                        {
+                            this.shadowFinderMatrix[i + 1][j] = this.shadowFinderMatrix[i][j];
+                            this.shadowFinderMatrix[i][j] = 0;
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -1209,6 +1285,7 @@ export class MyApp {
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
 
+
             if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8)
             {
                 element.style["background-color"] = randomColor;
@@ -1218,8 +1295,14 @@ export class MyApp {
                 //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
                 element.style["background-color"] = 'blue';
             }
+            else if (this.shadowFinderMatrix && this.shadowFinderMatrix[y][x]>0)
+                element.style["background-color"] = 'grey';
             else
                 element.style["background-color"] = 'white';
+
+
+            
+
 
             // if (x==randBlock)
             // {
@@ -1277,7 +1360,7 @@ export class MyApp {
         for (let i = 0; i < 20; i++) {
             tableHtml += "<tr>";
             for (let j = 0; j < 10; j++) {
-                let piece = 'x';
+                let piece = ' ';
                 // if (i==5)
                 //     piece = '';
                 // if (j == 0)
@@ -1292,6 +1375,10 @@ export class MyApp {
         tableHtml += "</table>";
 
         $("#gamediv").html(tableHtml);
+        let gameDivHeight:number = $("#gamediv").height();
+        let windowHeight:number = window.innerHeight;
+        // console.log(gameDivHeight,windowHeight);
+        // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
     }
 
 

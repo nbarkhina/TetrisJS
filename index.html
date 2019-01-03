@@ -39,11 +39,12 @@
         rv-text="data.getPauseButtonText | call data.paused"></button>
         <br>
         <div id="mydiv" class="mt-2">
-            FPS: <span rv-text="data.currentfps"></span> 
-            Touch: <span rv-text="data.touchDirection"></span>
+            <b>FPS:</b> <span rv-text="data.currentfps"></span> 
+            <b>Level:</b> { data.level } <b>Lines:</b> { data.lines }
+
         </div>
-        <div id="gamediv" class="mb-2">
-        </div>
+    </div>
+    <div id="gamediv" class="container text-center mb-2" style="position:absolute;bottom:10px;">
     </div>
 </body>
 
