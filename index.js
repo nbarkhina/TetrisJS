@@ -22,9 +22,11 @@ define(["require", "exports"], function (require, exports) {
             this.createGameTable();
             this.initGame();
             requestAnimationFrame(this.requestNextFrame);
-            $('#gamediv')[0].addEventListener('touchstart', this.touchStart, false);
-            $('#gamediv')[0].addEventListener('touchend', this.touchEnd, false);
-            $('#gamediv')[0].addEventListener('touchmove', this.touchMove, false);
+            $('#header')[0].addEventListener('touchstart', function (e) { console.log('header'); e.stopPropagation(); }, false);
+            $('#header')[0].addEventListener('touchend', function (e) { console.log('header'); e.stopPropagation(); }, false);
+            $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
+            $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
+            $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
             // document.addEventListener( 'keypress', this.keyPress, false );
             document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
             document.onkeyup = this.keyUp;
@@ -1060,6 +1062,15 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.createGameTable = function () {
             var tableHtml = '';
+            var boxSize = 20;
+            var windowHeight = window.innerHeight;
+            var windowWidth = window.innerWidth;
+            // console.log(windowHeight,windowWidth);
+            if (windowHeight > windowWidth && windowHeight > 700) {
+                var extraSpace = windowHeight - 700;
+                extraSpace = extraSpace / 20;
+                boxSize += extraSpace;
+            }
             tableHtml += '<table style="margin: 0px auto;">';
             for (var i = 0; i < 20; i++) {
                 tableHtml += "<tr>";
@@ -1070,7 +1081,7 @@ define(["require", "exports"], function (require, exports) {
                     // if (j == 0)
                     //     piece = i.toString();
                     tableHtml += "<td tetris-block x='" + j + "' y='" + i +
-                        "' style='width:20px;height:20px;background-color:lightblue;" +
+                        "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:lightblue;" +
                         "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
                 }
                 tableHtml += "</tr>";
@@ -1078,7 +1089,6 @@ define(["require", "exports"], function (require, exports) {
             tableHtml += "</table>";
             $("#gamediv").html(tableHtml);
             var gameDivHeight = $("#gamediv").height();
-            var windowHeight = window.innerHeight;
             // console.log(gameDivHeight,windowHeight);
             // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
         };

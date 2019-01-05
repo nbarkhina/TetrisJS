@@ -23,29 +23,43 @@
     document.getElementsByTagName('head')[0].appendChild(script);
 </script>
 <style>
-
+body, html {
+    height: 100%;
+}
 
 </style>
 <body>
-    <div class="container text-center" id="divMain">
-        <h3>
-            Tetris JS 
-            <!-- <span rv-if="data.draw">drawing</span> -->
-        </h3> 
-        <!-- <button class="btn btn-primary" id="btnStart" onclick="myApp.btnClick()"
-        rv-text="data.getMessage | call data.draw"></button> -->
+    <!-- <div class="text-center" id="divMain" 
+        style="background-color:lightgreen; padding-left: 0px; padding-right:0px;">
+        
         <button class="btn btn-primary" id="btnStart" onclick="myApp.btnClick()">New Game</button>
         <button class="btn btn-primary ml-2" id="btnStart" onclick="myApp.btnPause()"
         rv-text="data.getPauseButtonText | call data.paused"></button>
         <br>
-        <div id="mydiv" class="mt-2">
+        <div id="mydiv" class="">
             <b>FPS:</b> <span rv-text="data.currentfps"></span> 
             <b>Level:</b> { data.level } <b>Lines:</b> { data.lines }
-
         </div>
-        <div id="gamediv" class="mb-2" style="">
+    </div> -->
+    
+    <div id="divMain" class="text-center" style="height: 100%;background-color:rgb(231, 245, 255);">
+        <div id="header">
+            <h3>
+                Tetris JS 
+            </h3> 
+            <button class="btn btn-primary" id="btnStart" onclick="myApp.btnClick()">New Game</button>
+            <button class="btn btn-primary ml-2" id="btnStart" onclick="myApp.btnPause()"
+            rv-text="data.getPauseButtonText | call data.paused"></button>
+            <br>
+            <div id="mydiv" class="">
+                <b>FPS:</b> <span rv-text="data.currentfps"></span> 
+                <b>Level:</b> { data.level } <b>Lines:</b> { data.lines }
+            </div>
+        </div>
+        <div id="gamediv">
         </div>
     </div>
+
     
 </body>
 

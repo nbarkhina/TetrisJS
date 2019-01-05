@@ -44,9 +44,14 @@ export class MyApp {
 
         
 
-        $('#gamediv')[0].addEventListener( 'touchstart', this.touchStart, false );
-        $('#gamediv')[0].addEventListener( 'touchend', this.touchEnd, false );
-        $('#gamediv')[0].addEventListener( 'touchmove', this.touchMove, false );
+        $('#header')[0].addEventListener( 'touchstart', function(e){console.log('header'); e.stopPropagation();}, false );
+        $('#header')[0].addEventListener( 'touchend', function(e){console.log('header'); e.stopPropagation();}, false );
+
+        $('#divMain')[0].addEventListener( 'touchstart', this.touchStart, false );
+        $('#divMain')[0].addEventListener( 'touchend', this.touchEnd, false );
+        $('#divMain')[0].addEventListener( 'touchmove', this.touchMove, false );
+
+        
 
         // document.addEventListener( 'keypress', this.keyPress, false );
         document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
@@ -1355,11 +1360,24 @@ export class MyApp {
     }
 
     createGameTable() {
-        let tableHtml = '';
+        let tableHtml = ''; 
+        let boxSize = 20;
+        let windowHeight:number = window.innerHeight;
+        let windowWidth:number = window.innerWidth;
+
+        // console.log(windowHeight,windowWidth);
+ 
+        if (windowHeight>windowWidth && windowHeight>700)
+        {
+            let extraSpace = windowHeight-700;
+            extraSpace = extraSpace/20;
+            boxSize+=extraSpace;
+        }
+
         tableHtml += '<table style="margin: 0px auto;">';
         for (let i = 0; i < 20; i++) {
             tableHtml += "<tr>";
-            for (let j = 0; j < 10; j++) {
+            for (let j = 0; j < 10; j++) { 
                 let piece = ' ';
                 // if (i==5)
                 //     piece = '';
@@ -1367,7 +1385,7 @@ export class MyApp {
                 //     piece = i.toString();
 
                 tableHtml += "<td tetris-block x='" + j + "' y='" + i + 
-                    "' style='width:20px;height:20px;background-color:lightblue;" +
+                    "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:lightblue;" +
                     "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
             }
             tableHtml += "</tr>";
@@ -1376,7 +1394,7 @@ export class MyApp {
 
         $("#gamediv").html(tableHtml);
         let gameDivHeight:number = $("#gamediv").height();
-        let windowHeight:number = window.innerHeight;
+        
         // console.log(gameDivHeight,windowHeight);
         // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
     }
