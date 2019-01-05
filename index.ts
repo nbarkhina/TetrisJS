@@ -44,8 +44,8 @@ export class MyApp {
 
         
 
-        $('#header')[0].addEventListener( 'touchstart', function(e){console.log('header'); e.stopPropagation();}, false );
-        $('#header')[0].addEventListener( 'touchend', function(e){console.log('header'); e.stopPropagation();}, false );
+        $('#header')[0].addEventListener( 'touchstart', function(e){e.stopPropagation();}, false );
+        $('#header')[0].addEventListener( 'touchend', function(e){ e.stopPropagation();}, false );
 
         $('#divMain')[0].addEventListener( 'touchstart', this.touchStart, false );
         $('#divMain')[0].addEventListener( 'touchend', this.touchEnd, false );
@@ -95,7 +95,7 @@ export class MyApp {
     keyUp(event:KeyboardEvent)
     {
         let app = window.myApp as MyApp;
-        console.log(event);
+        // console.log(event);
 
         if (event.key=='a')
             app.drop();
@@ -1297,8 +1297,15 @@ export class MyApp {
             }
             else if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0)
             {
-                //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
-                element.style["background-color"] = 'blue';
+                let color = 'blue';
+                // if (this.gameMatrixBuffer[y][x] == 1 || this.gameMatrix[y][x] == 1) color = 'darkblue';
+				// if (this.gameMatrixBuffer[y][x] == 2 || this.gameMatrix[y][x] == 2) color = 'darkorange';
+				// if (this.gameMatrixBuffer[y][x] == 3 || this.gameMatrix[y][x] == 3) color = 'rgb(90, 34, 107)';
+				// if (this.gameMatrixBuffer[y][x] == 4 || this.gameMatrix[y][x] == 4) color = 'darkred';
+				// if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'darkcyan';
+				// if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'darkgreen';
+				// if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'rgb(209, 209, 0)';
+                element.style["background-color"] = color;
             }
             else if (this.shadowFinderMatrix && this.shadowFinderMatrix[y][x]>0)
                 element.style["background-color"] = 'grey';

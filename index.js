@@ -22,8 +22,8 @@ define(["require", "exports"], function (require, exports) {
             this.createGameTable();
             this.initGame();
             requestAnimationFrame(this.requestNextFrame);
-            $('#header')[0].addEventListener('touchstart', function (e) { console.log('header'); e.stopPropagation(); }, false);
-            $('#header')[0].addEventListener('touchend', function (e) { console.log('header'); e.stopPropagation(); }, false);
+            $('#header')[0].addEventListener('touchstart', function (e) { e.stopPropagation(); }, false);
+            $('#header')[0].addEventListener('touchend', function (e) { e.stopPropagation(); }, false);
             $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
             $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
             $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
@@ -57,7 +57,7 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.keyUp = function (event) {
             var app = window.myApp;
-            console.log(event);
+            // console.log(event);
             if (event.key == 'a')
                 app.drop();
             if (event.key == 'ArrowUp' || event.key == 'Up')
@@ -1016,8 +1016,15 @@ define(["require", "exports"], function (require, exports) {
                     element.style["background-color"] = randomColor;
                 }
                 else if (_this.gameMatrixBuffer[y][x] > 0 || _this.gameMatrix[y][x] > 0) {
-                    //addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
-                    element.style["background-color"] = 'blue';
+                    var color = 'blue';
+                    // if (this.gameMatrixBuffer[y][x] == 1 || this.gameMatrix[y][x] == 1) color = 'blue';
+                    // if (this.gameMatrixBuffer[y][x] == 2 || this.gameMatrix[y][x] == 2) color = 'orange';
+                    // if (this.gameMatrixBuffer[y][x] == 3 || this.gameMatrix[y][x] == 3) color = 'purple';
+                    // if (this.gameMatrixBuffer[y][x] == 4 || this.gameMatrix[y][x] == 4) color = 'red';
+                    // if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'cyan';
+                    // if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'green';
+                    // if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'yellow';
+                    element.style["background-color"] = color;
                 }
                 else if (_this.shadowFinderMatrix && _this.shadowFinderMatrix[y][x] > 0)
                     element.style["background-color"] = 'grey';
