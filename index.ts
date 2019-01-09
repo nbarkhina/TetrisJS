@@ -1392,9 +1392,9 @@ export class MyApp {
 
         // console.log(windowHeight,windowWidth);
  
-        if (windowHeight>700)
+        if (windowHeight>800)
         {
-            let extraSpace = windowHeight-700;
+            let extraSpace = windowHeight-800;
             extraSpace = extraSpace/20;
             boxSize+=extraSpace;
         }

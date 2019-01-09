@@ -1087,8 +1087,8 @@ define(["require", "exports"], function (require, exports) {
             var windowHeight = window.innerHeight;
             var windowWidth = window.innerWidth;
             // console.log(windowHeight,windowWidth);
-            if (windowHeight > 700) {
-                var extraSpace = windowHeight - 700;
+            if (windowHeight > 800) {
+                var extraSpace = windowHeight - 800;
                 extraSpace = extraSpace / 20;
                 boxSize += extraSpace;
             }
