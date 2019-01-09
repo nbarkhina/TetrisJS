@@ -63,6 +63,7 @@ export class MyApp {
 
     /* KEYBOARD CONTROLS */
 
+    dropKey = false;
     keyDown(event:KeyboardEvent)
     {
         let app = window.myApp as MyApp;
@@ -89,6 +90,21 @@ export class MyApp {
             app.rightKey = true;
             app.keytimer++;
         }
+        if (event.key=='a' && !app.dropKey)
+        {
+            app.drop();
+            app.dropKey = true;
+        }
+
+        if (event.key=='p')
+        {
+            app.btnPause();
+        }
+        if (event.key=='n')
+        {
+            app.newGame_Click();
+        }
+        
         
     }
 
@@ -98,7 +114,9 @@ export class MyApp {
         // console.log(event);
 
         if (event.key=='a')
-            app.drop();
+        {
+            app.dropKey = false;
+        }
 
         if (event.key=='ArrowUp' || event.key=='Up')
             app.upKey=true;
@@ -313,7 +331,7 @@ export class MyApp {
         for (let i = 0; i < 4; i++) {
             let arr3 = [];
             this.nextPieceMatrix.push(arr3);
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
                 this.nextPieceMatrix[i][j] = 0;
         }
 
@@ -451,7 +469,7 @@ export class MyApp {
     {
         this.startGame = false;
         for (let i = 0; i < 4; i++)
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
                 this.nextPieceMatrix[i][j] = 0;
         for (let i = 0; i < 20; i++)
         {
@@ -479,52 +497,52 @@ export class MyApp {
         }
         if (this.nextPiece == 1)
         {
-            this.nextPieceMatrix[1][4] = 1;
-            this.nextPieceMatrix[2][4] = 1;
+            this.nextPieceMatrix[1][2] = 1;
+            this.nextPieceMatrix[2][2] = 1;
+            this.nextPieceMatrix[2][1] = 1;
             this.nextPieceMatrix[2][3] = 1;
-            this.nextPieceMatrix[2][5] = 1;
         }
         if (this.nextPiece == 2)
         {
-            this.nextPieceMatrix[1][5] = 2;
-            this.nextPieceMatrix[1][4] = 2;
-            this.nextPieceMatrix[2][4] = 2;
-            this.nextPieceMatrix[2][3] = 2;
+            this.nextPieceMatrix[1][3] = 2;
+            this.nextPieceMatrix[1][2] = 2;
+            this.nextPieceMatrix[2][2] = 2;
+            this.nextPieceMatrix[2][1] = 2;
         }
         if (this.nextPiece == 3)
         {
-            this.nextPieceMatrix[1][3] = 3;
-            this.nextPieceMatrix[1][4] = 3;
-            this.nextPieceMatrix[2][4] = 3;
-            this.nextPieceMatrix[2][5] = 3;
+            this.nextPieceMatrix[1][1] = 3;
+            this.nextPieceMatrix[1][2] = 3;
+            this.nextPieceMatrix[2][2] = 3;
+            this.nextPieceMatrix[2][3] = 3;
         }
         if (this.nextPiece == 4)
         {
-            this.nextPieceMatrix[1][5] = 4;
-            this.nextPieceMatrix[2][5] = 4;
-            this.nextPieceMatrix[2][4] = 4;
+            this.nextPieceMatrix[1][3] = 4;
             this.nextPieceMatrix[2][3] = 4;
+            this.nextPieceMatrix[2][2] = 4;
+            this.nextPieceMatrix[2][1] = 4;
         }
         if (this.nextPiece == 5)
         {
-            this.nextPieceMatrix[1][3] = 5;
+            this.nextPieceMatrix[1][1] = 5;
+            this.nextPieceMatrix[2][1] = 5;
+            this.nextPieceMatrix[2][2] = 5;
             this.nextPieceMatrix[2][3] = 5;
-            this.nextPieceMatrix[2][4] = 5;
-            this.nextPieceMatrix[2][5] = 5;
         }
         if (this.nextPiece == 6)
         {
-            this.nextPieceMatrix[1][5] = 6;
-            this.nextPieceMatrix[1][4] = 6;
-            this.nextPieceMatrix[2][4] = 6;
-            this.nextPieceMatrix[2][5] = 6;
+            this.nextPieceMatrix[1][3] = 6;
+            this.nextPieceMatrix[1][2] = 6;
+            this.nextPieceMatrix[2][2] = 6;
+            this.nextPieceMatrix[2][3] = 6;
         }
         if (this.nextPiece == 7)
         {
-            this.nextPieceMatrix[0][4] = 7;
-            this.nextPieceMatrix[1][4] = 7;
-            this.nextPieceMatrix[2][4] = 7;
-            this.nextPieceMatrix[3][4] = 7;
+            this.nextPieceMatrix[0][2] = 7;
+            this.nextPieceMatrix[1][2] = 7;
+            this.nextPieceMatrix[2][2] = 7;
+            this.nextPieceMatrix[3][2] = 7;
         }
         if (this.piece == 1)
         {
@@ -1374,7 +1392,7 @@ export class MyApp {
 
         // console.log(windowHeight,windowWidth);
  
-        if (windowHeight>windowWidth && windowHeight>700)
+        if (windowHeight>700)
         {
             let extraSpace = windowHeight-700;
             extraSpace = extraSpace/20;
@@ -1399,7 +1417,7 @@ export class MyApp {
         let nextPieceHtml = '<table style="">';
         for (let i = 0; i < 4; i++) {
             nextPieceHtml += "<tr>";
-            for (let j = 0; j < 7; j++) { 
+            for (let j = 0; j < 5; j++) { 
                 let piece = ' ';
                 nextPieceHtml += "<td nextpiece-block x='" + j + "' y='" + i + 
                     "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:white;" +

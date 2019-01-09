@@ -6,6 +6,8 @@ define(["require", "exports"], function (require, exports) {
             this._lastFPS = new Date();
             this.keytimer = 0;
             this.paused = false;
+            /* KEYBOARD CONTROLS */
+            this.dropKey = false;
             /* TOUCH CONTROLS */
             this.touchDirection = '';
             this.touchX_Start = 0;
@@ -33,7 +35,6 @@ define(["require", "exports"], function (require, exports) {
             // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
             // document.getElementById('btnStart').ontouchmove = function(e){};
         }
-        /* KEYBOARD CONTROLS */
         MyApp.prototype.keyDown = function (event) {
             var app = window.myApp;
             // if (event.key=='ArrowLeft')
@@ -54,12 +55,23 @@ define(["require", "exports"], function (require, exports) {
                 app.rightKey = true;
                 app.keytimer++;
             }
+            if (event.key == 'a' && !app.dropKey) {
+                app.drop();
+                app.dropKey = true;
+            }
+            if (event.key == 'p') {
+                app.btnPause();
+            }
+            if (event.key == 'n') {
+                app.newGame_Click();
+            }
         };
         MyApp.prototype.keyUp = function (event) {
             var app = window.myApp;
             // console.log(event);
-            if (event.key == 'a')
-                app.drop();
+            if (event.key == 'a') {
+                app.dropKey = false;
+            }
             if (event.key == 'ArrowUp' || event.key == 'Up')
                 app.upKey = true;
             if (event.key == 'ArrowDown' || event.key == 'Down')
@@ -227,7 +239,7 @@ define(["require", "exports"], function (require, exports) {
             for (var i = 0; i < 4; i++) {
                 var arr3 = [];
                 this.nextPieceMatrix.push(arr3);
-                for (var j = 0; j < 7; j++)
+                for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
             }
         };
@@ -334,7 +346,7 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.gameover = function () {
             this.startGame = false;
             for (var i = 0; i < 4; i++)
-                for (var j = 0; j < 7; j++)
+                for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
             for (var i = 0; i < 20; i++) {
                 for (var j = 0; j < 10; j++) {
@@ -355,46 +367,46 @@ define(["require", "exports"], function (require, exports) {
                 return;
             }
             if (this.nextPiece == 1) {
-                this.nextPieceMatrix[1][4] = 1;
-                this.nextPieceMatrix[2][4] = 1;
+                this.nextPieceMatrix[1][2] = 1;
+                this.nextPieceMatrix[2][2] = 1;
+                this.nextPieceMatrix[2][1] = 1;
                 this.nextPieceMatrix[2][3] = 1;
-                this.nextPieceMatrix[2][5] = 1;
             }
             if (this.nextPiece == 2) {
-                this.nextPieceMatrix[1][5] = 2;
-                this.nextPieceMatrix[1][4] = 2;
-                this.nextPieceMatrix[2][4] = 2;
-                this.nextPieceMatrix[2][3] = 2;
+                this.nextPieceMatrix[1][3] = 2;
+                this.nextPieceMatrix[1][2] = 2;
+                this.nextPieceMatrix[2][2] = 2;
+                this.nextPieceMatrix[2][1] = 2;
             }
             if (this.nextPiece == 3) {
-                this.nextPieceMatrix[1][3] = 3;
-                this.nextPieceMatrix[1][4] = 3;
-                this.nextPieceMatrix[2][4] = 3;
-                this.nextPieceMatrix[2][5] = 3;
+                this.nextPieceMatrix[1][1] = 3;
+                this.nextPieceMatrix[1][2] = 3;
+                this.nextPieceMatrix[2][2] = 3;
+                this.nextPieceMatrix[2][3] = 3;
             }
             if (this.nextPiece == 4) {
-                this.nextPieceMatrix[1][5] = 4;
-                this.nextPieceMatrix[2][5] = 4;
-                this.nextPieceMatrix[2][4] = 4;
+                this.nextPieceMatrix[1][3] = 4;
                 this.nextPieceMatrix[2][3] = 4;
+                this.nextPieceMatrix[2][2] = 4;
+                this.nextPieceMatrix[2][1] = 4;
             }
             if (this.nextPiece == 5) {
-                this.nextPieceMatrix[1][3] = 5;
+                this.nextPieceMatrix[1][1] = 5;
+                this.nextPieceMatrix[2][1] = 5;
+                this.nextPieceMatrix[2][2] = 5;
                 this.nextPieceMatrix[2][3] = 5;
-                this.nextPieceMatrix[2][4] = 5;
-                this.nextPieceMatrix[2][5] = 5;
             }
             if (this.nextPiece == 6) {
-                this.nextPieceMatrix[1][5] = 6;
-                this.nextPieceMatrix[1][4] = 6;
-                this.nextPieceMatrix[2][4] = 6;
-                this.nextPieceMatrix[2][5] = 6;
+                this.nextPieceMatrix[1][3] = 6;
+                this.nextPieceMatrix[1][2] = 6;
+                this.nextPieceMatrix[2][2] = 6;
+                this.nextPieceMatrix[2][3] = 6;
             }
             if (this.nextPiece == 7) {
-                this.nextPieceMatrix[0][4] = 7;
-                this.nextPieceMatrix[1][4] = 7;
-                this.nextPieceMatrix[2][4] = 7;
-                this.nextPieceMatrix[3][4] = 7;
+                this.nextPieceMatrix[0][2] = 7;
+                this.nextPieceMatrix[1][2] = 7;
+                this.nextPieceMatrix[2][2] = 7;
+                this.nextPieceMatrix[3][2] = 7;
             }
             if (this.piece == 1) {
                 this.gameMatrixBuffer[0][5] = 1;
@@ -1075,7 +1087,7 @@ define(["require", "exports"], function (require, exports) {
             var windowHeight = window.innerHeight;
             var windowWidth = window.innerWidth;
             // console.log(windowHeight,windowWidth);
-            if (windowHeight > windowWidth && windowHeight > 700) {
+            if (windowHeight > 700) {
                 var extraSpace = windowHeight - 700;
                 extraSpace = extraSpace / 20;
                 boxSize += extraSpace;
@@ -1096,7 +1108,7 @@ define(["require", "exports"], function (require, exports) {
             var nextPieceHtml = '<table style="">';
             for (var i = 0; i < 4; i++) {
                 nextPieceHtml += "<tr>";
-                for (var j = 0; j < 7; j++) {
+                for (var j = 0; j < 5; j++) {
                     var piece = ' ';
                     nextPieceHtml += "<td nextpiece-block x='" + j + "' y='" + i +
                         "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:white;" +
