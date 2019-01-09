@@ -1311,41 +1311,41 @@ export class MyApp {
                 element.style["background-color"] = 'grey';
             else
                 element.style["background-color"] = 'white';
-
-
-            
-
-
-            // if (x==randBlock)
-            // {
-            //     if (element.innerText!='0')
-            //     {
-            //         element.innerText = "0";
-            //         element.style["background-color"] = 'green';
-            //         // background-color:lightblue
-            //     }
-                    
-            // }
-            // else
-            // {
-            //     if (element.innerText!='x')
-            //     {
-            //         element.innerText = "x";
-            //         element.style["background-color"] = 'lightblue';
-            //     }
-                    
-            // }
                 
         });
 
+        //draw next puiece
+        xCounter = -1;
+        yCounter = 0;
+        elements = $("[nextpiece-block]");
+        myElements = [];
+        for (let i = 0;i<elements.length;i++)
+            myElements.push(elements[i]);
 
 
-        elements.each(function(h,i){
-            
+        myElements.forEach(element => {
+            xCounter++;
 
+            if (xCounter==7)
+            {
+                xCounter = 0;
+                yCounter++;
+            }
+
+            let x = parseInt( element.attributes["x"].value );
+            let y = parseInt( element.attributes["y"].value );
+
+
+            if (this.nextPieceMatrix[y][x] > 0 || this.nextPieceMatrix[y][x] > 0)
+            {
+                let color = 'blue';
+                element.style["background-color"] = color;
+            }
+            else
+                element.style["background-color"] = 'white';
+                
         });
 
-        // console.log(this.counter);
     }
 
     btnClick() {
@@ -1386,11 +1386,6 @@ export class MyApp {
             tableHtml += "<tr>";
             for (let j = 0; j < 10; j++) { 
                 let piece = ' ';
-                // if (i==5)
-                //     piece = '';
-                // if (j == 0)
-                //     piece = i.toString();
-
                 tableHtml += "<td tetris-block x='" + j + "' y='" + i + 
                     "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:lightblue;" +
                     "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
@@ -1398,10 +1393,23 @@ export class MyApp {
             tableHtml += "</tr>";
         }
         tableHtml += "</table>";
-
         $("#gamediv").html(tableHtml);
-        let gameDivHeight:number = $("#gamediv").height();
-        
+
+
+        let nextPieceHtml = '<table style="">';
+        for (let i = 0; i < 4; i++) {
+            nextPieceHtml += "<tr>";
+            for (let j = 0; j < 7; j++) { 
+                let piece = ' ';
+                nextPieceHtml += "<td nextpiece-block x='" + j + "' y='" + i + 
+                    "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:white;" +
+                    "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
+            }
+            nextPieceHtml += "</tr>";
+        }
+        nextPieceHtml += "</table>";
+        $("#nextpiecediv").html(nextPieceHtml);
+        // let gameDivHeight:number = $("#gamediv").height();
         // console.log(gameDivHeight,windowHeight);
         // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
     }

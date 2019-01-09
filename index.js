@@ -1017,40 +1017,42 @@ define(["require", "exports"], function (require, exports) {
                 }
                 else if (_this.gameMatrixBuffer[y][x] > 0 || _this.gameMatrix[y][x] > 0) {
                     var color = 'blue';
-                    // if (this.gameMatrixBuffer[y][x] == 1 || this.gameMatrix[y][x] == 1) color = 'blue';
-                    // if (this.gameMatrixBuffer[y][x] == 2 || this.gameMatrix[y][x] == 2) color = 'orange';
-                    // if (this.gameMatrixBuffer[y][x] == 3 || this.gameMatrix[y][x] == 3) color = 'purple';
-                    // if (this.gameMatrixBuffer[y][x] == 4 || this.gameMatrix[y][x] == 4) color = 'red';
-                    // if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'cyan';
-                    // if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'green';
-                    // if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'yellow';
+                    // if (this.gameMatrixBuffer[y][x] == 1 || this.gameMatrix[y][x] == 1) color = 'darkblue';
+                    // if (this.gameMatrixBuffer[y][x] == 2 || this.gameMatrix[y][x] == 2) color = 'darkorange';
+                    // if (this.gameMatrixBuffer[y][x] == 3 || this.gameMatrix[y][x] == 3) color = 'rgb(90, 34, 107)';
+                    // if (this.gameMatrixBuffer[y][x] == 4 || this.gameMatrix[y][x] == 4) color = 'darkred';
+                    // if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'darkcyan';
+                    // if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'darkgreen';
+                    // if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'rgb(209, 209, 0)';
                     element.style["background-color"] = color;
                 }
                 else if (_this.shadowFinderMatrix && _this.shadowFinderMatrix[y][x] > 0)
                     element.style["background-color"] = 'grey';
                 else
                     element.style["background-color"] = 'white';
-                // if (x==randBlock)
-                // {
-                //     if (element.innerText!='0')
-                //     {
-                //         element.innerText = "0";
-                //         element.style["background-color"] = 'green';
-                //         // background-color:lightblue
-                //     }
-                // }
-                // else
-                // {
-                //     if (element.innerText!='x')
-                //     {
-                //         element.innerText = "x";
-                //         element.style["background-color"] = 'lightblue';
-                //     }
-                // }
             });
-            elements.each(function (h, i) {
+            //draw next puiece
+            xCounter = -1;
+            yCounter = 0;
+            elements = $("[nextpiece-block]");
+            myElements = [];
+            for (var i = 0; i < elements.length; i++)
+                myElements.push(elements[i]);
+            myElements.forEach(function (element) {
+                xCounter++;
+                if (xCounter == 7) {
+                    xCounter = 0;
+                    yCounter++;
+                }
+                var x = parseInt(element.attributes["x"].value);
+                var y = parseInt(element.attributes["y"].value);
+                if (_this.nextPieceMatrix[y][x] > 0 || _this.nextPieceMatrix[y][x] > 0) {
+                    var color = 'blue';
+                    element.style["background-color"] = color;
+                }
+                else
+                    element.style["background-color"] = 'white';
             });
-            // console.log(this.counter);
         };
         MyApp.prototype.btnClick = function () {
             this.reset();
@@ -1083,10 +1085,6 @@ define(["require", "exports"], function (require, exports) {
                 tableHtml += "<tr>";
                 for (var j = 0; j < 10; j++) {
                     var piece = ' ';
-                    // if (i==5)
-                    //     piece = '';
-                    // if (j == 0)
-                    //     piece = i.toString();
                     tableHtml += "<td tetris-block x='" + j + "' y='" + i +
                         "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:lightblue;" +
                         "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
@@ -1095,7 +1093,20 @@ define(["require", "exports"], function (require, exports) {
             }
             tableHtml += "</table>";
             $("#gamediv").html(tableHtml);
-            var gameDivHeight = $("#gamediv").height();
+            var nextPieceHtml = '<table style="">';
+            for (var i = 0; i < 4; i++) {
+                nextPieceHtml += "<tr>";
+                for (var j = 0; j < 7; j++) {
+                    var piece = ' ';
+                    nextPieceHtml += "<td nextpiece-block x='" + j + "' y='" + i +
+                        "' style='width:" + boxSize + "px;height:" + boxSize + "px;background-color:white;" +
+                        "border:1px black solid;font-size: .75rem;'>" + piece + "</td>";
+                }
+                nextPieceHtml += "</tr>";
+            }
+            nextPieceHtml += "</table>";
+            $("#nextpiecediv").html(nextPieceHtml);
+            // let gameDivHeight:number = $("#gamediv").height();
             // console.log(gameDivHeight,windowHeight);
             // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
         };
