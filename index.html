@@ -6,14 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/rivets/0.9.6/rivets.bundled.min.js"></script>
-    <!-- <script src="node_modules/rivets/dist/rivets.bundled.min.js"></script> -->
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="config"></script> -->
-    <!-- <link rel="stylesheet" href="style.css"> -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" >
 </head>
 <script type="text/javascript">
     var rando = Math.floor(Math.random() * Math.floor(100000));
@@ -57,11 +52,17 @@ body, html {
                 <b>FPS:</b> <span rv-text="data.currentfps"></span><br>
                 <b>Level:</b> { data.level }<br>
                 <b>Lines:</b> { data.lines }<br>
+                <br><br><br>
+                <i class="fas fa-arrow-up"></i> - Rotate<br>
+                <i class="fas fa-arrow-left"></i>&nbsp;<i class="fas fa-arrow-down"></i>&nbsp;<i class="fas fa-arrow-right"></i> - Move<br>
+                <b>A</b> - Drop<br>
+                <b>P</b> - Pause<br>
+                <b>N</b> - Reset<br>
             </div>
             <div class="col" id="gamediv">
             </div>
             <div class="col d-none d-md-block" style="text-align:left;">
-                Next Piece
+                <b>Next Piece</b>
                 <br><br>
                 <div id="nextpiecediv">
                 </div>
