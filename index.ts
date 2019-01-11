@@ -1,12 +1,18 @@
 declare var window, rivets;
 
+enum GAME_MODE{
+    TITLE = 1,
+    PLAYING = 2,
+    PAUSED = 3
+
+}
 
 export class MyApp {
 
 
     _fps: number;
     _lastFPS = new Date();
-    upKey: boolean
+
     downKey: boolean;
     leftKey: boolean;
     rightKey: boolean;
@@ -26,14 +32,14 @@ export class MyApp {
     levelSpeed: number;
     lines: number;
     nextLevel: number;
-    startGame: boolean;
-    gameOver: boolean;
     currentTime: number;
     framecounter: number;
     fps: number;
     delay: number;
     keytimer = 0;
-    paused = false;
+    game_mode = GAME_MODE.TITLE;
+
+    
 
     constructor() {
         this.bindRivets();
@@ -64,18 +70,10 @@ export class MyApp {
     /* KEYBOARD CONTROLS */
 
     dropKey = false;
+    upKey = false;
     keyDown(event:KeyboardEvent)
     {
         let app = window.myApp as MyApp;
-
-        // if (event.key=='ArrowLeft')
-        //     app.moveLeft();
-        // if (event.key=='ArrowRight')
-        //     app.moveRight();
-        // if (event.key=='ArrowDown')
-        //     app.moveDown();
-        // if (event.key=='ArrowUp')
-        //     app.rotate();
 
         if (event.key=='ArrowDown' || event.key=='Down')
             app.downKey = true;
@@ -94,6 +92,11 @@ export class MyApp {
         {
             app.drop();
             app.dropKey = true;
+        }
+        if ( (event.key=='ArrowUp' || event.key=='Up') && !app.upKey )
+        {
+            app.rotate();
+            app.upKey = true;
         }
 
         if (event.key=='p')
@@ -117,9 +120,11 @@ export class MyApp {
         {
             app.dropKey = false;
         }
+        if ( (event.key=='ArrowUp' || event.key=='Up')  )
+        {
+            app.upKey = false;
+        }
 
-        if (event.key=='ArrowUp' || event.key=='Up')
-            app.upKey=true;
 
         if (event.key=='ArrowDown' || event.key=='Down')
             app.downKey=false;
@@ -228,7 +233,7 @@ export class MyApp {
         
         
         let app = window.myApp as MyApp;
-        if (app.paused)
+        if (app.game_mode!=GAME_MODE.PLAYING)
             return;
 
         if (app.touchDirection=='left')
@@ -291,10 +296,7 @@ export class MyApp {
 
     initGame() {
 
-        // this.currentTime = new Date();
         this.fps = 0;
-        this.gameOver = false;
-        this.startGame = false;
         this.nextLevel = 0;
         this.timer = 0;
         this.piece = 0;
@@ -308,7 +310,6 @@ export class MyApp {
         this.nextPiece = this.getRandomNumber(7) + 1;
         this.toClear = false;
         this.toMakePiece = true;
-        this.upKey = false;
         this.downKey = false;
         this.leftKey = false;
         this.rightKey = false;
@@ -341,9 +342,7 @@ export class MyApp {
     reset() {
 
 
-        this.paused = false;
-        this.gameOver = false;
-        this.startGame = true;
+        this.game_mode = GAME_MODE.PLAYING;
 
 
 
@@ -365,7 +364,6 @@ export class MyApp {
         this.nextPiece = this.getRandomNumber(7) + 1;
         this.toClear = false;
         this.toMakePiece = true;
-        this.upKey = false;
         this.downKey = false;
         this.leftKey = false;
         this.rightKey = false;
@@ -387,14 +385,8 @@ export class MyApp {
     gameLoop()
     {
         //program loop
-        if (!this.startGame)
+        if (this.game_mode!=GAME_MODE.PLAYING)
         {
-
-            return;
-        }
-        if (this.paused)
-        {
-
             return;
         }
 
@@ -435,11 +427,6 @@ export class MyApp {
             this.makePiece();
             this.toMakePiece = false;
         }
-        if (this.upKey && !this.toClear)
-        {
-            this.rotate();
-            this.upKey = false;
-        }
         if (this.downKey && !this.toClear)
             this.moveDown();
         if (this.leftKey && !this.toClear && this.keytimer != 2)
@@ -467,7 +454,7 @@ export class MyApp {
 
     gameover()
     {
-        this.startGame = false;
+        this.game_mode=GAME_MODE.TITLE;
         for (let i = 0; i < 4; i++)
             for (let j = 0; j < 5; j++)
                 this.nextPieceMatrix[i][j] = 0;
@@ -480,7 +467,7 @@ export class MyApp {
             }
 
         }
-        this.gameOver = true;
+        
     }
 
     makePiece()
@@ -678,9 +665,16 @@ export class MyApp {
     }
 
     drop(){
+        let counter = 0; //failsafe
         while(this.toMakePiece==false)
         {
-            this.moveDown();
+            counter++;
+            if (counter>100)
+                return;
+
+            if (this.game_mode==GAME_MODE.PLAYING)
+                this.moveDown();
+            
         }
 
     }
@@ -794,6 +788,9 @@ export class MyApp {
 
     rotate()
     {
+        if (this.game_mode!=GAME_MODE.PLAYING)
+            return;
+
         if (this.piece == 1)
         {
             if (this.state == 1)
@@ -1371,14 +1368,17 @@ export class MyApp {
     }
 
     btnPause() {
-        if (this.paused)
-            this.paused = false;
+        if (this.game_mode==GAME_MODE.TITLE)
+            return;
+
+        if (this.game_mode==GAME_MODE.PAUSED) 
+            this.game_mode = GAME_MODE.PLAYING;
         else
-            this.paused = true;
+            this.game_mode = GAME_MODE.PAUSED;
     }
 
     getPauseButtonText():string{
-        if (this.paused) 
+        if (this.game_mode==GAME_MODE.PAUSED) 
             return "Resume";
         else
             return "Pause";

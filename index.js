@@ -1,13 +1,20 @@
 define(["require", "exports"], function (require, exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: true });
+    var GAME_MODE;
+    (function (GAME_MODE) {
+        GAME_MODE[GAME_MODE["TITLE"] = 1] = "TITLE";
+        GAME_MODE[GAME_MODE["PLAYING"] = 2] = "PLAYING";
+        GAME_MODE[GAME_MODE["PAUSED"] = 3] = "PAUSED";
+    })(GAME_MODE || (GAME_MODE = {}));
     var MyApp = /** @class */ (function () {
         function MyApp() {
             this._lastFPS = new Date();
             this.keytimer = 0;
-            this.paused = false;
+            this.game_mode = GAME_MODE.TITLE;
             /* KEYBOARD CONTROLS */
             this.dropKey = false;
+            this.upKey = false;
             /* TOUCH CONTROLS */
             this.touchDirection = '';
             this.touchX_Start = 0;
@@ -37,14 +44,6 @@ define(["require", "exports"], function (require, exports) {
         }
         MyApp.prototype.keyDown = function (event) {
             var app = window.myApp;
-            // if (event.key=='ArrowLeft')
-            //     app.moveLeft();
-            // if (event.key=='ArrowRight')
-            //     app.moveRight();
-            // if (event.key=='ArrowDown')
-            //     app.moveDown();
-            // if (event.key=='ArrowUp')
-            //     app.rotate();
             if (event.key == 'ArrowDown' || event.key == 'Down')
                 app.downKey = true;
             if (event.key == 'ArrowLeft' || event.key == 'Left') {
@@ -59,6 +58,10 @@ define(["require", "exports"], function (require, exports) {
                 app.drop();
                 app.dropKey = true;
             }
+            if ((event.key == 'ArrowUp' || event.key == 'Up') && !app.upKey) {
+                app.rotate();
+                app.upKey = true;
+            }
             if (event.key == 'p') {
                 app.btnPause();
             }
@@ -72,8 +75,9 @@ define(["require", "exports"], function (require, exports) {
             if (event.key == 'a') {
                 app.dropKey = false;
             }
-            if (event.key == 'ArrowUp' || event.key == 'Up')
-                app.upKey = true;
+            if ((event.key == 'ArrowUp' || event.key == 'Up')) {
+                app.upKey = false;
+            }
             if (event.key == 'ArrowDown' || event.key == 'Down')
                 app.downKey = false;
             if (event.key == 'ArrowLeft' || event.key == 'Left') {
@@ -155,7 +159,7 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.touchEnd = function (event) {
             var app = window.myApp;
-            if (app.paused)
+            if (app.game_mode != GAME_MODE.PLAYING)
                 return;
             if (app.touchDirection == 'left') {
                 // if (!app.touchMoved)
@@ -202,10 +206,7 @@ define(["require", "exports"], function (require, exports) {
             this.reset();
         };
         MyApp.prototype.initGame = function () {
-            // this.currentTime = new Date();
             this.fps = 0;
-            this.gameOver = false;
-            this.startGame = false;
             this.nextLevel = 0;
             this.timer = 0;
             this.piece = 0;
@@ -218,7 +219,6 @@ define(["require", "exports"], function (require, exports) {
             this.nextPiece = this.getRandomNumber(7) + 1;
             this.toClear = false;
             this.toMakePiece = true;
-            this.upKey = false;
             this.downKey = false;
             this.leftKey = false;
             this.rightKey = false;
@@ -244,9 +244,7 @@ define(["require", "exports"], function (require, exports) {
             }
         };
         MyApp.prototype.reset = function () {
-            this.paused = false;
-            this.gameOver = false;
-            this.startGame = true;
+            this.game_mode = GAME_MODE.PLAYING;
             for (var i = 0; i < 4; i++) {
                 for (var j = 0; j < 7; j++)
                     this.nextPieceMatrix[i][j] = 0;
@@ -263,7 +261,6 @@ define(["require", "exports"], function (require, exports) {
             this.nextPiece = this.getRandomNumber(7) + 1;
             this.toClear = false;
             this.toMakePiece = true;
-            this.upKey = false;
             this.downKey = false;
             this.leftKey = false;
             this.rightKey = false;
@@ -282,10 +279,7 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.gameLoop = function () {
             //program loop
-            if (!this.startGame) {
-                return;
-            }
-            if (this.paused) {
+            if (this.game_mode != GAME_MODE.PLAYING) {
                 return;
             }
             if (this.level == 1)
@@ -323,10 +317,6 @@ define(["require", "exports"], function (require, exports) {
                 this.makePiece();
                 this.toMakePiece = false;
             }
-            if (this.upKey && !this.toClear) {
-                this.rotate();
-                this.upKey = false;
-            }
             if (this.downKey && !this.toClear)
                 this.moveDown();
             if (this.leftKey && !this.toClear && this.keytimer != 2) {
@@ -344,7 +334,7 @@ define(["require", "exports"], function (require, exports) {
             this.findShadow();
         };
         MyApp.prototype.gameover = function () {
-            this.startGame = false;
+            this.game_mode = GAME_MODE.TITLE;
             for (var i = 0; i < 4; i++)
                 for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
@@ -354,7 +344,6 @@ define(["require", "exports"], function (require, exports) {
                     this.gameMatrixBuffer[i][j] = 0;
                 }
             }
-            this.gameOver = true;
         };
         MyApp.prototype.makePiece = function () {
             this.piece = this.nextPiece;
@@ -516,8 +505,13 @@ define(["require", "exports"], function (require, exports) {
             }
         };
         MyApp.prototype.drop = function () {
+            var counter = 0; //failsafe
             while (this.toMakePiece == false) {
-                this.moveDown();
+                counter++;
+                if (counter > 100)
+                    return;
+                if (this.game_mode == GAME_MODE.PLAYING)
+                    this.moveDown();
             }
         };
         MyApp.prototype.findShadow = function () {
@@ -600,6 +594,8 @@ define(["require", "exports"], function (require, exports) {
             }
         };
         MyApp.prototype.rotate = function () {
+            if (this.game_mode != GAME_MODE.PLAYING)
+                return;
             if (this.piece == 1) {
                 if (this.state == 1) {
                     if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0) {
@@ -1070,13 +1066,15 @@ define(["require", "exports"], function (require, exports) {
             this.reset();
         };
         MyApp.prototype.btnPause = function () {
-            if (this.paused)
-                this.paused = false;
+            if (this.game_mode == GAME_MODE.TITLE)
+                return;
+            if (this.game_mode == GAME_MODE.PAUSED)
+                this.game_mode = GAME_MODE.PLAYING;
             else
-                this.paused = true;
+                this.game_mode = GAME_MODE.PAUSED;
         };
         MyApp.prototype.getPauseButtonText = function () {
-            if (this.paused)
+            if (this.game_mode == GAME_MODE.PAUSED)
                 return "Resume";
             else
                 return "Pause";
