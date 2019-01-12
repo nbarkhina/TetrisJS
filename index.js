@@ -12,6 +12,7 @@ define(["require", "exports"], function (require, exports) {
             this._lastFPS = new Date();
             this.keytimer = 0;
             this.game_mode = GAME_MODE.TITLE;
+            this.waitForDownKeyRelease = false;
             /* KEYBOARD CONTROLS */
             this.dropKey = false;
             this.upKey = false;
@@ -80,8 +81,10 @@ define(["require", "exports"], function (require, exports) {
             if ((event.key == 'ArrowUp' || event.key == 'Up')) {
                 app.upKey = false;
             }
-            if (event.key == 'ArrowDown' || event.key == 'Down')
+            if (event.key == 'ArrowDown' || event.key == 'Down') {
+                app.waitForDownKeyRelease = false;
                 app.downKey = false;
+            }
             if (event.key == 'ArrowLeft' || event.key == 'Left') {
                 app.leftKey = false;
                 app.keytimer = 0;
@@ -245,6 +248,7 @@ define(["require", "exports"], function (require, exports) {
             this.score = 0;
             this.level = 1;
             this.lines = 0;
+            this.waitForDownKeyRelease = false;
             this.nextPiece = this.getRandomNumber(7) + 1;
             this.toClear = false;
             this.toMakePiece = true;
@@ -303,8 +307,10 @@ define(["require", "exports"], function (require, exports) {
             if (this.toMakePiece && this.timer >= 0) {
                 this.makePiece();
                 this.toMakePiece = false;
+                if (this.downKey) //prevent constant downkey if new piece is generated
+                    this.waitForDownKeyRelease = true;
             }
-            if (this.downKey && !this.toClear)
+            if (this.downKey && !this.toClear && !this.waitForDownKeyRelease)
                 this.moveDown();
             if (this.leftKey && !this.toClear && this.keytimer != 2) {
                 this.moveLeft();

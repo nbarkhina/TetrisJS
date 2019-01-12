@@ -38,6 +38,7 @@ export class MyApp {
     delay: number;
     keytimer = 0;
     game_mode = GAME_MODE.TITLE;
+    waitForDownKeyRelease = false;
 
     
 
@@ -129,7 +130,11 @@ export class MyApp {
 
 
         if (event.key=='ArrowDown' || event.key=='Down')
+        {
+            app.waitForDownKeyRelease = false;
             app.downKey=false;
+        }
+            
 
         if (event.key=='ArrowLeft' || event.key=='Left')
         {
@@ -352,6 +357,7 @@ export class MyApp {
         this.score = 0;
         this.level = 1;
         this.lines = 0;
+        this.waitForDownKeyRelease = false;
 
         this.nextPiece = this.getRandomNumber(7) + 1;
         this.toClear = false;
@@ -418,8 +424,11 @@ export class MyApp {
         {
             this.makePiece();
             this.toMakePiece = false;
+            
+            if (this.downKey) //prevent constant downkey if new piece is generated
+                this.waitForDownKeyRelease = true;
         }
-        if (this.downKey && !this.toClear)
+        if (this.downKey && !this.toClear && !this.waitForDownKeyRelease)
             this.moveDown();
         if (this.leftKey && !this.toClear && this.keytimer != 2)
         {
