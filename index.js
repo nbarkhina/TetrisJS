@@ -31,7 +31,7 @@ define(["require", "exports"], function (require, exports) {
             this.bindRivets();
             this.createGameTable();
             this.initGame();
-            smurf;
+            // smurf;
             requestAnimationFrame(this.requestNextFrame);
             $('#header')[0].addEventListener('touchstart', function (e) { e.stopPropagation(); }, false);
             $('#header')[0].addEventListener('touchend', function (e) { e.stopPropagation(); }, false);
