@@ -145,8 +145,9 @@ export class MyApp {
     
     touchDirection:string='';
     touchX_Start:number=0;
+    touchX_InitialStart:number=0;
     touchY_Start:number=0;
-    touch_threshold:number=20;
+    touch_threshold:number=25;
     lastTouch = new Date();
     touchTimer = 0;
     touchMoved = false;
@@ -164,6 +165,7 @@ export class MyApp {
         app.lastTouch = new Date();
 
         app.touchX_Start = event.touches[0].clientX;
+        app.touchX_InitialStart = event.touches[0].clientX;
         app.touchY_Start = event.touches[0].clientY;
         app.touchTimer = 0;
         app.touchMoved = false;
@@ -172,31 +174,38 @@ export class MyApp {
     touchMove(event:TouchEvent){
         event.preventDefault();
         let app = window.myApp as MyApp;
+
+        if (event.touches[0].clientX<app.touchX_Start-app.touch_threshold)
+        {
+            app.touchX_Start = event.touches[0].clientX;
+            app.moveLeft();
+        }
+        if (event.touches[0].clientX>app.touchX_Start+app.touch_threshold)
+        {
+            app.touchX_Start = event.touches[0].clientX;
+            app.moveRight();
+        }
+
         let leftCounter = 0;
         let rightCounter = 0;
         let upCounter = 0;
         let downCounter = 0;
-        if (event.touches[0].clientX<app.touchX_Start-app.touch_threshold)
+        if (event.touches[0].clientX<app.touchX_InitialStart-app.touch_threshold)
         {
-            leftCounter = app.touchX_Start-event.touches[0].clientX;
-            // app.touchDirection = 'left';
+            leftCounter = app.touchX_InitialStart-event.touches[0].clientX;
         }
-        if (event.touches[0].clientX>app.touchX_Start+app.touch_threshold)
+        if (event.touches[0].clientX>app.touchX_InitialStart+app.touch_threshold)
         {
-            rightCounter = event.touches[0].clientX-app.touchX_Start;
-            // app.touchDirection = 'right';
+            rightCounter = event.touches[0].clientX-app.touchX_InitialStart;
         }
         if (event.touches[0].clientY<app.touchY_Start-app.touch_threshold)
         {
             upCounter = app.touchY_Start-event.touches[0].clientY;
-            // app.touchDirection = 'up';
         }
         if (event.touches[0].clientY>app.touchY_Start+app.touch_threshold)
         {
             downCounter = event.touches[0].clientY-app.touchY_Start;
-            // app.touchDirection = 'down';
         } 
-
         if (leftCounter>0 || rightCounter>0 || upCounter>0 || downCounter>0)
         {
             let greatest = app.findGreatest([leftCounter,rightCounter,upCounter,downCounter]);
@@ -206,26 +215,7 @@ export class MyApp {
             if (greatest==3) app.touchDirection = 'down';
         }
 
-        // if (app.touchDirection == 'left')
-        // {
-        //     app.touchTimer++;
-        //     if (app.touchTimer>3)
-        //     {
-        //         app.moveLeft();
-        //         app.touchTimer = 0;
-        //         app.touchMoved = true;
-        //     }
-        // }
-        // if (app.touchDirection == 'right')
-        // {
-        //     app.touchTimer++;
-        //     if (app.touchTimer>3)
-        //     {
-        //         app.moveRight();
-        //         app.touchTimer = 0;
-        //         app.touchMoved = true;
-        //     }
-        // }
+
         
     }
 
@@ -239,12 +229,12 @@ export class MyApp {
         if (app.touchDirection=='left')
         {
             // if (!app.touchMoved)
-                app.moveLeft();
+                // app.moveLeft();
         }
         if (app.touchDirection=='right')
         {
             // if (!app.touchMoved)
-                app.moveRight();
+                // app.moveRight();
         }
         // if (app.touchDirection=='up')
         //     app.rotate();
@@ -454,6 +444,7 @@ export class MyApp {
 
     gameover()
     {
+        $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines)
         this.game_mode=GAME_MODE.TITLE;
         for (let i = 0; i < 4; i++)
             for (let j = 0; j < 5; j++)
@@ -1308,6 +1299,7 @@ export class MyApp {
 
             if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8)
             {
+                // element.style["background-image"] = 'linear-gradient(-45deg,' + randomColor + ', lightblue)';
                 element.style["background-color"] = randomColor;
             }
             else if (this.gameMatrixBuffer[y][x] > 0 || this.gameMatrix[y][x] > 0)
@@ -1319,13 +1311,20 @@ export class MyApp {
 				// if (this.gameMatrixBuffer[y][x] == 4 || this.gameMatrix[y][x] == 4) color = 'darkred';
 				// if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'darkcyan';
 				// if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'darkgreen';
-				// if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'rgb(209, 209, 0)';
+                // if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'rgb(209, 209, 0)';
+                // element.style["background-image"] = 'linear-gradient(-45deg,blue, lightblue)';
                 element.style["background-color"] = color;
             }
             else if (this.shadowFinderMatrix && this.shadowFinderMatrix[y][x]>0)
+            {
+                // element.style["background-image"] = 'linear-gradient(grey, grey)';
                 element.style["background-color"] = 'grey';
+            }   
             else
+            {
+                // element.style["background-image"] = 'linear-gradient(white, white)';
                 element.style["background-color"] = 'white';
+            }
                 
         });
 

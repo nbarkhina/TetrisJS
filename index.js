@@ -18,8 +18,9 @@ define(["require", "exports"], function (require, exports) {
             /* TOUCH CONTROLS */
             this.touchDirection = '';
             this.touchX_Start = 0;
+            this.touchX_InitialStart = 0;
             this.touchY_Start = 0;
-            this.touch_threshold = 20;
+            this.touch_threshold = 25;
             this.lastTouch = new Date();
             this.touchTimer = 0;
             this.touchMoved = false;
@@ -98,6 +99,7 @@ define(["require", "exports"], function (require, exports) {
             }
             app.lastTouch = new Date();
             app.touchX_Start = event.touches[0].clientX;
+            app.touchX_InitialStart = event.touches[0].clientX;
             app.touchY_Start = event.touches[0].clientY;
             app.touchTimer = 0;
             app.touchMoved = false;
@@ -105,25 +107,29 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.touchMove = function (event) {
             event.preventDefault();
             var app = window.myApp;
+            if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
+                app.touchX_Start = event.touches[0].clientX;
+                app.moveLeft();
+            }
+            if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
+                app.touchX_Start = event.touches[0].clientX;
+                app.moveRight();
+            }
             var leftCounter = 0;
             var rightCounter = 0;
             var upCounter = 0;
             var downCounter = 0;
-            if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
-                leftCounter = app.touchX_Start - event.touches[0].clientX;
-                // app.touchDirection = 'left';
+            if (event.touches[0].clientX < app.touchX_InitialStart - app.touch_threshold) {
+                leftCounter = app.touchX_InitialStart - event.touches[0].clientX;
             }
-            if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
-                rightCounter = event.touches[0].clientX - app.touchX_Start;
-                // app.touchDirection = 'right';
+            if (event.touches[0].clientX > app.touchX_InitialStart + app.touch_threshold) {
+                rightCounter = event.touches[0].clientX - app.touchX_InitialStart;
             }
             if (event.touches[0].clientY < app.touchY_Start - app.touch_threshold) {
                 upCounter = app.touchY_Start - event.touches[0].clientY;
-                // app.touchDirection = 'up';
             }
             if (event.touches[0].clientY > app.touchY_Start + app.touch_threshold) {
                 downCounter = event.touches[0].clientY - app.touchY_Start;
-                // app.touchDirection = 'down';
             }
             if (leftCounter > 0 || rightCounter > 0 || upCounter > 0 || downCounter > 0) {
                 var greatest = app.findGreatest([leftCounter, rightCounter, upCounter, downCounter]);
@@ -136,26 +142,6 @@ define(["require", "exports"], function (require, exports) {
                 if (greatest == 3)
                     app.touchDirection = 'down';
             }
-            // if (app.touchDirection == 'left')
-            // {
-            //     app.touchTimer++;
-            //     if (app.touchTimer>3)
-            //     {
-            //         app.moveLeft();
-            //         app.touchTimer = 0;
-            //         app.touchMoved = true;
-            //     }
-            // }
-            // if (app.touchDirection == 'right')
-            // {
-            //     app.touchTimer++;
-            //     if (app.touchTimer>3)
-            //     {
-            //         app.moveRight();
-            //         app.touchTimer = 0;
-            //         app.touchMoved = true;
-            //     }
-            // }
         };
         MyApp.prototype.touchEnd = function (event) {
             var app = window.myApp;
@@ -163,11 +149,11 @@ define(["require", "exports"], function (require, exports) {
                 return;
             if (app.touchDirection == 'left') {
                 // if (!app.touchMoved)
-                app.moveLeft();
+                // app.moveLeft();
             }
             if (app.touchDirection == 'right') {
                 // if (!app.touchMoved)
-                app.moveRight();
+                // app.moveRight();
             }
             // if (app.touchDirection=='up')
             //     app.rotate();
@@ -334,6 +320,8 @@ define(["require", "exports"], function (require, exports) {
             this.findShadow();
         };
         MyApp.prototype.gameover = function () {
+            // 
+            $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines);
             this.game_mode = GAME_MODE.TITLE;
             for (var i = 0; i < 4; i++)
                 for (var j = 0; j < 5; j++)
@@ -1021,6 +1009,7 @@ define(["require", "exports"], function (require, exports) {
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
                 if (_this.gameMatrixBuffer[y][x] == 8 || _this.gameMatrix[y][x] == 8) {
+                    // element.style["background-image"] = 'linear-gradient(-45deg,' + randomColor + ', lightblue)';
                     element.style["background-color"] = randomColor;
                 }
                 else if (_this.gameMatrixBuffer[y][x] > 0 || _this.gameMatrix[y][x] > 0) {
@@ -1032,12 +1021,17 @@ define(["require", "exports"], function (require, exports) {
                     // if (this.gameMatrixBuffer[y][x] == 5 || this.gameMatrix[y][x] == 5) color = 'darkcyan';
                     // if (this.gameMatrixBuffer[y][x] == 6 || this.gameMatrix[y][x] == 6) color = 'darkgreen';
                     // if (this.gameMatrixBuffer[y][x] == 7 || this.gameMatrix[y][x] == 7) color = 'rgb(209, 209, 0)';
+                    // element.style["background-image"] = 'linear-gradient(-45deg,blue, lightblue)';
                     element.style["background-color"] = color;
                 }
-                else if (_this.shadowFinderMatrix && _this.shadowFinderMatrix[y][x] > 0)
+                else if (_this.shadowFinderMatrix && _this.shadowFinderMatrix[y][x] > 0) {
+                    // element.style["background-image"] = 'linear-gradient(grey, grey)';
                     element.style["background-color"] = 'grey';
-                else
+                }
+                else {
+                    // element.style["background-image"] = 'linear-gradient(white, white)';
                     element.style["background-color"] = 'white';
+                }
             });
             //draw next puiece
             xCounter = -1;
