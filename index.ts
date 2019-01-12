@@ -46,7 +46,7 @@ export class MyApp {
         this.createGameTable();
         this.initGame();
 
-        smurf;
+        // smurf;
 
         requestAnimationFrame(this.requestNextFrame);
 
