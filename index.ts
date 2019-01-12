@@ -181,6 +181,8 @@ export class MyApp {
     touchMove(event:TouchEvent){
         event.preventDefault();
         let app = window.myApp as MyApp;
+        if (app.game_mode!=GAME_MODE.PLAYING)
+            return;
 
         if (event.touches[0].clientX<app.touchX_Start-app.touch_threshold)
         {

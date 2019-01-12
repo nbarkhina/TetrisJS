@@ -111,6 +111,8 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.touchMove = function (event) {
             event.preventDefault();
             var app = window.myApp;
+            if (app.game_mode != GAME_MODE.PLAYING)
+                return;
             if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
                 app.touchX_Start = event.touches[0].clientX;
                 app.moveLeft();
