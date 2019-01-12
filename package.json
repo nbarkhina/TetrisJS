@@ -13,11 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/angular": "^1.6.53",
-    "@types/datatables.net": "^1.10.14",
-    "@types/toastr": "^2.1.35",
-    "angular": "^1.7.5",
-    "ejs": "^2.6.1",
-    "rivets": "^0.9.6"
+    "@types/jquery": "^3.3.29"
   }
 }
