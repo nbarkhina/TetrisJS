@@ -31,6 +31,7 @@ define(["require", "exports"], function (require, exports) {
             this.bindRivets();
             this.createGameTable();
             this.initGame();
+            smurf;
             requestAnimationFrame(this.requestNextFrame);
             $('#header')[0].addEventListener('touchstart', function (e) { e.stopPropagation(); }, false);
             $('#header')[0].addEventListener('touchend', function (e) { e.stopPropagation(); }, false);
@@ -320,7 +321,6 @@ define(["require", "exports"], function (require, exports) {
             this.findShadow();
         };
         MyApp.prototype.gameover = function () {
-            // 
             $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines);
             this.game_mode = GAME_MODE.TITLE;
             for (var i = 0; i < 4; i++)

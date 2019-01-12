@@ -6,7 +6,7 @@
     // "outFile": "main.js",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "watch": true,
+    "watch": false,
     "sourceMap": true,
     // "baseUrl": "public",
     // "paths": {
