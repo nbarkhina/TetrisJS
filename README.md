@@ -1,4 +1,6 @@
 # Tetris JS
+[![Build status](https://neilb.visualstudio.com/Git%20Neil/_apis/build/status/Tetris%20JS%20CI)](https://neilb.visualstudio.com/Git%20Neil/_build/latest?definitionId=5)
+
 This is the classic game of Tetris written in pure HTML (No Canvas 2D Controls). It simply uses HTML Tables and jQuery for rendering, and is surprisingly pretty fast. I know there's a lot of these out on the web but I wanted to create something that looked minimalistic yet elegant with excellent controls and compatibility.
 
 See demo here: https://www.neilb.net/tetrisjs/

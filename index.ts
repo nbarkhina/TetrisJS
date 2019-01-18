@@ -9,10 +9,6 @@ enum GAME_MODE{
 
 export class MyApp {
 
-
-    _fps: number;
-    _lastFPS = new Date();
-
     downKey: boolean;
     leftKey: boolean;
     rightKey: boolean;
@@ -32,8 +28,6 @@ export class MyApp {
     levelSpeed: number;
     lines: number;
     nextLevel: number;
-    currentTime: number;
-    framecounter: number;
     fps: number;
     delay: number;
     keytimer = 0;
@@ -1111,131 +1105,7 @@ export class MyApp {
             ;//TODO blockcleared.play();
     }
 
-    // public void paint()
-    // {
 
-
-    //     if (this.paused)
-    //     {
-
-    //     }
-    //     else if (!this.gameOver)
-    //     {
-    //         draw next piece
-    //         for (int i = 0; i < 4; i++)
-    //         {
-    //             for (int j = 0; j < 7; j++)
-    //             {
-    //                 if (nextPieceMatrix[i][j] == 1)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Blue,Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 2)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Orange, Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 3)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Purple, Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 4)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Red, Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 5)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Cyan, Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 6)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Green, Colors.White);
-    //                 }
-    //                 if (nextPieceMatrix[i][j] == 7)
-    //                 {
-    //                     addBlock(-30 + (20 * j), 80 + (20 * i), Colors.Yellow, Colors.White);
-    //                 }
-    //             }
-    //         }
-
-    //         for (let i = 0; i < 20; i++)
-    //         {
-    //             for (let j = 0; j < 10; j++)
-    //             {
-    //                 if (gameMatrixBuffer[i][j] == 1)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 2)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Orange, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 3)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Purple, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 4)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Red, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 5)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Cyan, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 6)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Green, Colors.White);
-    //                 }
-    //                 if (gameMatrixBuffer[i][j] == 7)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Yellow, Colors.White);
-    //                 }
-
-
-    //                 //for clearing purposes
-    //                 if (gameMatrix[i][j] == 8)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), c, Color.FromArgb(0,0,0,0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 1)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Blue, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 2)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Orange, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 3)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Purple, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 4)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Red, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 5)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Cyan, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 6)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Green, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-    //                 if (gameMatrix[i][j] == 7)
-    //                 {
-    //                     addBlock(150 + (20 * j), 50 + (20 * i), Colors.Yellow, Color.FromArgb(0, 0, 0, 0));
-    //                 }
-
-    //             }
-    //         }
-    //     }
-
-    // }
-
-
-
-
-
-    /* MY FUNCTIONS */
 
     requestNextFrame(){
         let app:MyApp = window.myApp;
