@@ -88,15 +88,15 @@ export class MyApp {
     initGamePad(e)
     {
         try{
-            if (e.gamepad.index==0)
+            if (e.gamepad.buttons.length>0)
             {
                 this.message = '<b>Gamepad Detected:</b><br>' + e.gamepad.id;
             }
         }catch{}
 
-            // console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
-            //   e.gamepad.index, e.gamepad.id,
-            //   e.gamepad.buttons.length, e.gamepad.axes.length);
+            console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+              e.gamepad.index, e.gamepad.id,
+              e.gamepad.buttons.length, e.gamepad.axes.length);
     }
 
     processGamepad(){
@@ -104,7 +104,13 @@ export class MyApp {
             var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
             if (!gamepads)
               return;
-            var gp = gamepads[0];
+            var gp = null;
+            for (let i=0;i<gamepads.length;i++) 
+            {
+                if (gamepads[i] && gamepads[i].buttons.length>0)
+                    gp = gamepads[i];
+            }
+                
 
             if (gp)
             {
