@@ -3,9 +3,9 @@
 
 This is the classic game of Tetris written in pure HTML (No Canvas 2D Controls). It uses HTML Tables and jQuery for rendering, and is surprisingly pretty fast. I know there's a lot of these out on the web but I wanted to create something that looked minimalistic yet elegant with excellent controls and compatibility.
 
-See demo here: https://www.neilb.net/tetrisjs/
-
 Wide browser support on both desktop and mobile devices. Includes keyboard, touch, and even Xbox Gamepad Support! It is fully responsive and on larger screens it displays more information like the next piece. I spent quite a bit of time tweaking the touch controls to make it feel smooth and responsive on any smartphone.
+
+See demo here: https://www.neilb.net/tetrisjs/
 
 # Architecture
 

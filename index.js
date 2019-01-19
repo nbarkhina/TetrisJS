@@ -58,6 +58,7 @@ define(["require", "exports"], function (require, exports) {
             document.onkeydown = this.keyDown;
             document.onkeyup = this.keyUp;
             window.addEventListener("gamepadconnected", this.initGamePad.bind(this));
+            window.addEventListener("resize", this.onWindowResize.bind(this));
         }
         /* GAMEPAD CONTROLS */
         MyApp.prototype.initGamePad = function (e) {
@@ -1125,6 +1126,27 @@ define(["require", "exports"], function (require, exports) {
             // let gameDivHeight:number = $("#gamediv").height();
             // console.log(gameDivHeight,windowHeight);
             // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
+        };
+        MyApp.prototype.onWindowResize = function () {
+            var elements = $("[tetris-block]");
+            var elements2 = $("[nextpiece-block]");
+            var myElements = [];
+            var boxSize = 20;
+            var windowHeight = window.innerHeight;
+            if (windowHeight > 800) {
+                var extraSpace = windowHeight - 800;
+                extraSpace = extraSpace / 20;
+                boxSize += extraSpace;
+            }
+            for (var i = 0; i < elements.length; i++)
+                myElements.push(elements[i]);
+            for (var i = 0; i < elements2.length; i++)
+                myElements.push(elements2[i]);
+            myElements.forEach(function (element) {
+                element.style["width"] = boxSize + 'px';
+                element.style["height"] = boxSize + 'px';
+            });
+            // console.log('window resized. boxsize: ' + boxSize);
         };
         return MyApp;
     }());

@@ -81,7 +81,10 @@ export class MyApp {
         
 
         window.addEventListener("gamepadconnected", this.initGamePad.bind(this));
+        window.addEventListener("resize",this.onWindowResize.bind(this));
     }
+
+
 
     /* GAMEPAD CONTROLS */
 
@@ -1463,6 +1466,37 @@ export class MyApp {
         // let gameDivHeight:number = $("#gamediv").height();
         // console.log(gameDivHeight,windowHeight);
         // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
+    }
+
+    onWindowResize()
+    {
+        let elements = $("[tetris-block]");
+        let elements2 = $("[nextpiece-block]");
+        let myElements:HTMLElement[] = [];
+
+        let boxSize = 20;
+        let windowHeight:number = window.innerHeight;
+        if (windowHeight>800)
+        {
+            let extraSpace = windowHeight-800;
+            extraSpace = extraSpace/20;
+            boxSize+=extraSpace;
+        }
+
+
+        for (let i = 0;i<elements.length;i++)
+            myElements.push(elements[i]);
+        for (let i = 0;i<elements2.length;i++)
+            myElements.push(elements2[i]);
+        
+        myElements.forEach(element => {
+            
+                element.style["width"] = boxSize + 'px';
+                element.style["height"] = boxSize + 'px';
+            
+        });
+
+        // console.log('window resized. boxsize: ' + boxSize);
     }
 
 
