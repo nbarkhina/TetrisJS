@@ -7,11 +7,28 @@ define(["require", "exports"], function (require, exports) {
         GAME_MODE[GAME_MODE["PLAYING"] = 2] = "PLAYING";
         GAME_MODE[GAME_MODE["PAUSED"] = 3] = "PAUSED";
     })(GAME_MODE || (GAME_MODE = {}));
+    var GamePadState = /** @class */ (function () {
+        function GamePadState(buttonNum, keyName) {
+            this.buttonDown = false;
+            this.buttonNum = -1;
+            this.buttonTimer = 0;
+            this.keyName = '';
+            this.buttonNum = buttonNum;
+            this.keyName = keyName;
+        }
+        return GamePadState;
+    }());
+    exports.GamePadState = GamePadState;
     var MyApp = /** @class */ (function () {
         function MyApp() {
-            this.keytimer = 0;
+            this.message = '';
+            // keytimer = 0;
+            this.downkeytimer = 0;
+            this.leftkeytimer = 0;
+            this.rightkeytimer = 0;
             this.game_mode = GAME_MODE.TITLE;
             this.waitForDownKeyRelease = false;
+            this.gamepadButtons = [];
             /* KEYBOARD CONTROLS */
             this.dropKey = false;
             this.upKey = false;
@@ -38,23 +55,95 @@ define(["require", "exports"], function (require, exports) {
             $('#divMain')[0].addEventListener('touchstart', this.touchStart, false);
             $('#divMain')[0].addEventListener('touchend', this.touchEnd, false);
             $('#divMain')[0].addEventListener('touchmove', this.touchMove, false);
-            // document.addEventListener( 'keypress', this.keyPress, false );
-            document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
+            document.onkeydown = this.keyDown;
             document.onkeyup = this.keyUp;
-            // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
-            // document.getElementById('btnStart').ontouchmove = function(e){};
+            window.addEventListener("gamepadconnected", this.initGamePad.bind(this));
         }
+        /* GAMEPAD CONTROLS */
+        MyApp.prototype.initGamePad = function (e) {
+            try {
+                if (e.gamepad.index == 0) {
+                    this.message = '<b>Gamepad Detected:</b><br>' + e.gamepad.id;
+                }
+            }
+            catch (_a) { }
+            // console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            //   e.gamepad.index, e.gamepad.id,
+            //   e.gamepad.buttons.length, e.gamepad.axes.length);
+        };
+        MyApp.prototype.processGamepad = function () {
+            var _this = this;
+            try {
+                var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+                if (!gamepads)
+                    return;
+                var gp = gamepads[0];
+                if (gp) {
+                    for (var i = 0; i < gp.buttons.length; i++) {
+                        if (gp.buttons[i].pressed)
+                            console.log(i);
+                    }
+                    this.gamepadButtons.forEach(function (button) {
+                        //handle left/right differently - add delay
+                        // if (button.keyName=='Left' || button.keyName=='Right')
+                        // {
+                        //     if (gp.buttons[button.buttonNum].pressed)
+                        //     {
+                        //         if (button.buttonTimer==0 || (button.buttonTimer>10 && button.buttonTimer%3==0))
+                        //         {
+                        //             if (button.keyName=='Left') this.moveLeft();
+                        //             if (button.keyName=='Right') this.moveRight();
+                        //         }
+                        //         button.buttonDown = true;
+                        //         button.buttonTimer++;
+                        //     }
+                        //     else if (button.buttonDown)
+                        //     {
+                        //         button.buttonDown = false;
+                        //         button.buttonTimer = 0;
+                        //     }
+                        // }
+                        // else
+                        {
+                            if (gp.buttons[button.buttonNum].pressed) {
+                                if (button.buttonTimer == 0) {
+                                    _this.sendKeyDownEvent(button.keyName);
+                                    // console.log('button timer: ' + button.buttonTimer);
+                                }
+                                button.buttonDown = true;
+                                button.buttonTimer++;
+                            }
+                            else if (button.buttonDown) {
+                                // console.log('gamepad up');
+                                if (!gp.buttons[button.buttonNum].pressed) {
+                                    button.buttonDown = false;
+                                    button.buttonTimer = 0;
+                                    _this.sendKeyUpEvent(button.keyName);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            catch (_a) { }
+        };
+        MyApp.prototype.sendKeyDownEvent = function (key) {
+            var keyEvent = new KeyboardEvent('Gamepad Event Down', { key: key });
+            this.keyDown(keyEvent);
+        };
+        MyApp.prototype.sendKeyUpEvent = function (key) {
+            var keyEvent = new KeyboardEvent('Gamepad Event Up', { key: key });
+            this.keyUp(keyEvent);
+        };
         MyApp.prototype.keyDown = function (event) {
             var app = window.myApp;
             if (event.key == 'ArrowDown' || event.key == 'Down')
                 app.downKey = true;
             if (event.key == 'ArrowLeft' || event.key == 'Left') {
                 app.leftKey = true;
-                app.keytimer++;
             }
             if (event.key == 'ArrowRight' || event.key == 'Right') {
                 app.rightKey = true;
-                app.keytimer++;
             }
             if (event.key == 'a' && !app.dropKey) {
                 app.drop();
@@ -86,11 +175,9 @@ define(["require", "exports"], function (require, exports) {
             }
             if (event.key == 'ArrowLeft' || event.key == 'Left') {
                 app.leftKey = false;
-                app.keytimer = 0;
             }
             if (event.key == 'ArrowRight' || event.key == 'Right') {
                 app.rightKey = false;
-                app.keytimer = 0;
             }
         };
         MyApp.prototype.touchStart = function (event) {
@@ -233,6 +320,14 @@ define(["require", "exports"], function (require, exports) {
                 for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
             }
+            this.gamepadButtons.push(new GamePadState(14, 'Left'));
+            this.gamepadButtons.push(new GamePadState(15, 'Right'));
+            this.gamepadButtons.push(new GamePadState(13, 'Down'));
+            this.gamepadButtons.push(new GamePadState(0, 'Up'));
+            this.gamepadButtons.push(new GamePadState(1, 'Up'));
+            this.gamepadButtons.push(new GamePadState(12, 'a'));
+            this.gamepadButtons.push(new GamePadState(9, 'p'));
+            this.gamepadButtons.push(new GamePadState(8, 'n'));
         };
         MyApp.prototype.reset = function () {
             this.game_mode = GAME_MODE.PLAYING;
@@ -274,6 +369,19 @@ define(["require", "exports"], function (require, exports) {
             if (this.game_mode != GAME_MODE.PLAYING) {
                 return;
             }
+            //put delays on directional keys - for right/left move once then wait
+            if (this.downKey)
+                this.downkeytimer++;
+            else
+                this.downkeytimer = 0;
+            if (this.leftKey)
+                this.leftkeytimer++;
+            else
+                this.leftkeytimer = 0;
+            if (this.rightKey)
+                this.rightkeytimer++;
+            else
+                this.rightkeytimer = 0;
             if (this.level == 1)
                 this.levelSpeed = 30;
             if (this.level == 2)
@@ -311,15 +419,17 @@ define(["require", "exports"], function (require, exports) {
                 if (this.downKey) //prevent constant downkey if new piece is generated
                     this.waitForDownKeyRelease = true;
             }
-            if (this.downKey && !this.toClear && !this.waitForDownKeyRelease)
-                this.moveDown();
-            if (this.leftKey && !this.toClear && this.keytimer != 2) {
-                this.moveLeft();
-                this.keytimer++;
+            if (this.downKey && !this.toClear && !this.waitForDownKeyRelease) {
+                if (this.downkeytimer % 3 == 0)
+                    this.moveDown();
             }
-            if (this.rightKey && !this.toClear && this.keytimer != 2) {
-                this.moveRight();
-                this.keytimer++;
+            if (this.leftKey && !this.toClear) {
+                if (this.leftkeytimer == 1 || (this.leftkeytimer > 15 && this.leftkeytimer % 3 == 0))
+                    this.moveLeft();
+            }
+            if (this.rightKey && !this.toClear) {
+                if (this.rightkeytimer == 1 || (this.rightkeytimer > 15 && this.rightkeytimer % 3 == 0))
+                    this.moveRight();
             }
             if (this.timer == this.levelSpeed) {
                 this.timer = 0;
@@ -456,6 +566,8 @@ define(["require", "exports"], function (require, exports) {
                 this.gameover();
         };
         MyApp.prototype.moveLeft = function () {
+            if (this.game_mode != GAME_MODE.PLAYING)
+                return;
             var success = true;
             for (var i = 0; i < 10; i++) {
                 for (var j = 0; j < 20; j++) {
@@ -478,6 +590,8 @@ define(["require", "exports"], function (require, exports) {
             }
         };
         MyApp.prototype.moveRight = function () {
+            if (this.game_mode != GAME_MODE.PLAYING)
+                return;
             var success = true;
             for (var i = 9; i > -1; i--) {
                 for (var j = 0; j < 20; j++) {
@@ -852,6 +966,7 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.requestNextFrame = function () {
             var app = window.myApp;
+            app.processGamepad();
             app.gameLoop();
             app.newPaint();
             requestAnimationFrame(app.requestNextFrame);

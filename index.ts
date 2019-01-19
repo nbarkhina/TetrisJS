@@ -1,4 +1,4 @@
-declare var window, rivets;
+declare var window, rivets, navigator;
 
 enum GAME_MODE{
     TITLE = 1,
@@ -7,8 +7,23 @@ enum GAME_MODE{
 
 }
 
+export class GamePadState{
+    buttonDown:boolean = false;
+    buttonNum:number = -1;
+    buttonTimer = 0;
+    keyName:string = '';
+    
+
+    constructor(buttonNum:number,keyName:string) {
+        this.buttonNum = buttonNum;
+        this.keyName = keyName;
+    }
+
+}
+
 export class MyApp {
 
+    message: string = '';
     downKey: boolean;
     leftKey: boolean;
     rightKey: boolean;
@@ -30,9 +45,13 @@ export class MyApp {
     nextLevel: number;
     fps: number;
     delay: number;
-    keytimer = 0;
+    // keytimer = 0;
+    downkeytimer = 0;
+    leftkeytimer = 0;
+    rightkeytimer = 0;
     game_mode = GAME_MODE.TITLE;
     waitForDownKeyRelease = false;
+    gamepadButtons:GamePadState[] = [];
 
     
 
@@ -56,12 +75,109 @@ export class MyApp {
 
         
 
-        // document.addEventListener( 'keypress', this.keyPress, false );
-        document.onkeydown = this.keyDown; //function(ev){console.log(ev)};
+
+        document.onkeydown = this.keyDown; 
         document.onkeyup = this.keyUp;
         
-        // $('#btnStart')[0].addEventListener( 'touchstart', this.dontPrevent, false );
-        // document.getElementById('btnStart').ontouchmove = function(e){};
+
+        window.addEventListener("gamepadconnected", this.initGamePad.bind(this));
+    }
+
+    /* GAMEPAD CONTROLS */
+
+    initGamePad(e)
+    {
+        try{
+            if (e.gamepad.index==0)
+            {
+                this.message = '<b>Gamepad Detected:</b><br>' + e.gamepad.id;
+            }
+        }catch{}
+
+            // console.log("Gamepad connected at index %d: %s. %d buttons, %d axes.",
+            //   e.gamepad.index, e.gamepad.id,
+            //   e.gamepad.buttons.length, e.gamepad.axes.length);
+    }
+
+    processGamepad(){
+        try{
+            var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+            if (!gamepads)
+              return;
+            var gp = gamepads[0];
+
+            if (gp)
+            {
+                for(let i=0;i<gp.buttons.length;i++)
+                {
+                    if (gp.buttons[i].pressed)
+                        console.log(i);
+                }
+                this.gamepadButtons.forEach(button => {
+
+                    //handle left/right differently - add delay
+                    // if (button.keyName=='Left' || button.keyName=='Right')
+                    // {
+                    //     if (gp.buttons[button.buttonNum].pressed)
+                    //     {
+                    //         if (button.buttonTimer==0 || (button.buttonTimer>10 && button.buttonTimer%3==0))
+                    //         {
+                    //             if (button.keyName=='Left') this.moveLeft();
+                    //             if (button.keyName=='Right') this.moveRight();
+                    //         }
+                    //         button.buttonDown = true;
+                    //         button.buttonTimer++;
+                    //     }
+                    //     else if (button.buttonDown)
+                    //     {
+                    //         button.buttonDown = false;
+                    //         button.buttonTimer = 0;
+                    //     }
+                    // }
+                    // else
+                    {
+                        if (gp.buttons[button.buttonNum].pressed)
+                        {
+                            if (button.buttonTimer==0)
+                            {
+                                this.sendKeyDownEvent(button.keyName);
+                                // console.log('button timer: ' + button.buttonTimer);
+                            }   
+                            button.buttonDown = true;
+                            button.buttonTimer++;
+                        }
+                        else if (button.buttonDown)
+                        {
+                            // console.log('gamepad up');
+                            if (!gp.buttons[button.buttonNum].pressed)
+                            {
+                                button.buttonDown = false;
+                                button.buttonTimer = 0;
+                                this.sendKeyUpEvent(button.keyName);
+                            }
+                        }
+                    }
+                    
+
+
+                });    
+
+            }
+                
+
+        }catch{}
+    }
+    
+    sendKeyDownEvent(key:string)
+    {
+        let keyEvent = new KeyboardEvent('Gamepad Event Down',{key:key});
+        this.keyDown(keyEvent);
+    }
+
+    sendKeyUpEvent(key:string)
+    {
+        let keyEvent = new KeyboardEvent('Gamepad Event Up',{key:key});
+        this.keyUp(keyEvent);
     }
 
     /* KEYBOARD CONTROLS */
@@ -70,6 +186,7 @@ export class MyApp {
     upKey = false;
     keyDown(event:KeyboardEvent)
     {
+        
         let app = window.myApp as MyApp;
 
         if (event.key=='ArrowDown' || event.key=='Down')
@@ -78,12 +195,10 @@ export class MyApp {
         if (event.key=='ArrowLeft' || event.key=='Left')
         {
             app.leftKey = true;
-            app.keytimer++;
         }
         if (event.key=='ArrowRight' || event.key=='Right')
         {
             app.rightKey = true;
-            app.keytimer++;
         }
         if (event.key=='a' && !app.dropKey)
         {
@@ -133,12 +248,10 @@ export class MyApp {
         if (event.key=='ArrowLeft' || event.key=='Left')
         {
             app.leftKey=false;
-            app.keytimer = 0;
         }
         if (event.key=='ArrowRight' || event.key=='Right') 
         {
             app.rightKey=false;
-            app.keytimer = 0;
         }
     }
 
@@ -329,6 +442,15 @@ export class MyApp {
                 this.nextPieceMatrix[i][j] = 0;
         }
 
+        this.gamepadButtons.push(new GamePadState(14,'Left'));
+        this.gamepadButtons.push(new GamePadState(15,'Right'));
+        this.gamepadButtons.push(new GamePadState(13,'Down'));
+        this.gamepadButtons.push(new GamePadState(0,'Up'));
+        this.gamepadButtons.push(new GamePadState(1,'Up'));
+        this.gamepadButtons.push(new GamePadState(12,'a'));
+        this.gamepadButtons.push(new GamePadState(9,'p'));
+        this.gamepadButtons.push(new GamePadState(8,'n'));
+
     }
 
 
@@ -384,6 +506,20 @@ export class MyApp {
             return;
         }
 
+        //put delays on directional keys - for right/left move once then wait
+        if (this.downKey)
+            this.downkeytimer++;
+        else
+            this.downkeytimer=0;
+        if (this.leftKey)
+            this.leftkeytimer++;
+        else
+            this.leftkeytimer=0;
+        if (this.rightKey)
+            this.rightkeytimer++;
+        else
+            this.rightkeytimer=0;
+
         if (this.level == 1)
             this.levelSpeed = 30;
         if (this.level == 2)
@@ -425,17 +561,21 @@ export class MyApp {
                 this.waitForDownKeyRelease = true;
         }
         if (this.downKey && !this.toClear && !this.waitForDownKeyRelease)
-            this.moveDown();
-        if (this.leftKey && !this.toClear && this.keytimer != 2)
         {
-            this.moveLeft();
-            this.keytimer++;
+            if (this.downkeytimer%3==0)
+                this.moveDown();
+        }
+            
+        if (this.leftKey && !this.toClear)
+        {
+            if (this.leftkeytimer==1 || (this.leftkeytimer>15 && this.leftkeytimer%3==0))
+                this.moveLeft();
         }
 
-        if (this.rightKey && !this.toClear && this.keytimer != 2)
+        if (this.rightKey && !this.toClear)
         {
-            this.moveRight();
-            this.keytimer++;
+            if (this.rightkeytimer==1 || (this.rightkeytimer>15 && this.rightkeytimer%3==0))
+                this.moveRight();
         }
 
         if (this.timer == this.levelSpeed)
@@ -443,7 +583,7 @@ export class MyApp {
             this.timer = 0;
             this.moveDown();
         }
-
+        
         this.findShadow();
 
         
@@ -602,6 +742,8 @@ export class MyApp {
 
     moveLeft()
     {
+        if (this.game_mode!=GAME_MODE.PLAYING)
+            return;
         let success = true;
         for (let i = 0; i < 10; i++)
         {
@@ -633,6 +775,8 @@ export class MyApp {
 
     moveRight()
     {
+        if (this.game_mode!=GAME_MODE.PLAYING)
+            return;
         let success = true;
         for (let i = 9; i > -1; i--)
         {
@@ -1109,6 +1253,7 @@ export class MyApp {
 
     requestNextFrame(){
         let app:MyApp = window.myApp;
+        app.processGamepad();
         app.gameLoop();
         app.newPaint();
         requestAnimationFrame(app.requestNextFrame);  
