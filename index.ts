@@ -941,6 +941,9 @@ export class MyApp {
     {
         if (this.game_mode!=GAME_MODE.PLAYING)
             return;
+        
+        if (this.toClear)
+            return;
 
         if (this.piece == 1)
         {

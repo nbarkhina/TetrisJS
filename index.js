@@ -708,6 +708,8 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.rotate = function () {
             if (this.game_mode != GAME_MODE.PLAYING)
                 return;
+            if (this.toClear)
+                return;
             if (this.piece == 1) {
                 if (this.state == 1) {
                     if (this.centY != 19 && this.gameMatrix[this.centY + 1][this.centX] == 0) {
