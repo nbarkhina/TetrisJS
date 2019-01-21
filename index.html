@@ -55,12 +55,35 @@ body, html {
                 <b>Level:</b> { data.level }<br>
                 <b>Lines:</b> { data.lines }<br>
                 <br><br><br>
-                <i class="fas fa-arrow-up"></i> - Rotate<br>
-                <i class="fas fa-arrow-left"></i>&nbsp;<i class="fas fa-arrow-down"></i>&nbsp;<i class="fas fa-arrow-right"></i> - Move<br>
-                <b>A</b> - Drop<br>
-                <b>P</b> - Pause<br>
-                <b>N</b> - Reset<br>
-                <br><br>
+                <div style="float:right;">
+                    <table style="text-align: center;">
+                        <tr>
+                            <td><i class="fas fa-arrow-up"></i></td>
+                            <td><div style="width:20px;"></div></td>
+                            <td>Rotate</td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-arrow-left"></i>&nbsp;<i class="fas fa-arrow-down"></i>&nbsp;<i class="fas fa-arrow-right"></i></td>
+                            <td></td>
+                            <td>Move</td>
+                        </tr>
+                        <tr>
+                            <td><b>A</b></td>
+                            <td></td>
+                            <td>Drop</td>
+                        </tr>
+                        <tr>
+                            <td><b>P</b></td>
+                            <td></td>
+                            <td>Pause</td>
+                        </tr>
+                        <tr>
+                            <td><b>N</b></td>
+                            <td></td>
+                            <td>New Game</td>
+                        </tr>
+                    </table>
+                </div>
                 <section rv-html="data.message"></section>
             </div>
             <div class="col" id="gamediv">
