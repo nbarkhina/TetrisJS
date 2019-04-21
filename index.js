@@ -202,13 +202,20 @@ define(["require", "exports"], function (require, exports) {
             var app = window.myApp;
             if (app.game_mode != GAME_MODE.PLAYING)
                 return;
-            if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
-                app.touchX_Start = event.touches[0].clientX;
-                app.moveLeft();
-            }
-            if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
-                app.touchX_Start = event.touches[0].clientX;
-                app.moveRight();
+            var xDistance = Math.abs(event.touches[0].clientX - app.touchX_Start);
+            var yDistance = Math.abs(event.touches[0].clientY - app.touchY_Start);
+            var movingDown = false;
+            if (yDistance > xDistance)
+                movingDown = true;
+            if (!movingDown) {
+                if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
+                    app.touchX_Start = event.touches[0].clientX;
+                    app.moveLeft();
+                }
+                if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
+                    app.touchX_Start = event.touches[0].clientX;
+                    app.moveRight();
+                }
             }
             var leftCounter = 0;
             var rightCounter = 0;
@@ -279,6 +286,11 @@ define(["require", "exports"], function (require, exports) {
         };
         MyApp.prototype.bindRivets = function () {
             rivets.bind($('body'), { data: this });
+            setTimeout(function () {
+                $("#loadingDiv").hide();
+                $("#header").show();
+                $("#gameArea").show();
+            }, 500);
         };
         MyApp.prototype.getRandomNumber = function (max) {
             return Math.floor(Math.random() * Math.floor(max));

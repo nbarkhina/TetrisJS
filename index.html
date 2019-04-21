@@ -31,9 +31,12 @@ body, html {
 
 </style>
 <body>
-    
     <div id="divMain" class="text-center" style="height: 100%;background-color:rgb(231, 245, 255);">
-        <div id="header">
+        <div id="loadingDiv" class="text-center" >
+        <br><br>
+            Loading...
+        </div>
+        <div id="header" style="display:none;">
             <h3>
                 Tetris JS 
             </h3> 
@@ -49,7 +52,7 @@ body, html {
                 <br>
             </div>
         </div>
-        <div class="row">
+        <div id="gameArea" class="row" style="display:none;">
             <div class="col d-none d-md-block" style="text-align:right;">
                 <b>FPS:</b> <span rv-text="data.currentfps"></span><br>
                 <b>Level:</b> { data.level }<br>
@@ -84,7 +87,7 @@ body, html {
                         </tr>
                     </table>
                 </div>
-                <section rv-html="data.message"></section>
+                <section style="position:relative;right:20px;" rv-html="data.message"></section>
             </div>
             <div class="col" id="gamediv">
             </div>

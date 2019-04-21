@@ -300,15 +300,23 @@ export class MyApp {
         if (app.game_mode!=GAME_MODE.PLAYING)
             return;
 
-        if (event.touches[0].clientX<app.touchX_Start-app.touch_threshold)
+        let xDistance = Math.abs(event.touches[0].clientX-app.touchX_Start);
+        let yDistance = Math.abs(event.touches[0].clientY-app.touchY_Start);
+        let movingDown = false;
+        if (yDistance>xDistance)
+            movingDown = true;
+        if (!movingDown)
         {
-            app.touchX_Start = event.touches[0].clientX;
-            app.moveLeft();
-        }
-        if (event.touches[0].clientX>app.touchX_Start+app.touch_threshold)
-        {
-            app.touchX_Start = event.touches[0].clientX;
-            app.moveRight();
+            if (event.touches[0].clientX<app.touchX_Start-app.touch_threshold)
+            {   
+                app.touchX_Start = event.touches[0].clientX;
+                app.moveLeft();
+            }
+            if (event.touches[0].clientX>app.touchX_Start+app.touch_threshold)
+            {
+                app.touchX_Start = event.touches[0].clientX;
+                app.moveRight();
+            }
         }
 
         let leftCounter = 0;
@@ -399,6 +407,14 @@ export class MyApp {
 
     bindRivets() {
         rivets.bind($('body'), { data: this });
+
+        setTimeout(() => {
+            $("#loadingDiv").hide();
+            $("#header").show();
+            $("#gameArea").show();
+        }, 500);
+
+        
     }
 
     getRandomNumber(max: number): number {
