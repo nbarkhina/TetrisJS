@@ -53,7 +53,7 @@ body, html {
             </div>
         </div>
         <div id="gameArea" class="row" style="display:none;">
-            <div class="col d-none d-md-block" style="text-align:right;">
+            <div class="col-md-4 d-none d-md-block" style="text-align:right;">
                 <b>FPS:</b> <span rv-text="data.currentfps"></span><br>
                 <b>Level:</b> { data.level }<br>
                 <b>Lines:</b> { data.lines }<br>
@@ -89,11 +89,14 @@ body, html {
                 </div>
                 <section style="position:relative;right:20px;" rv-html="data.message"></section>
             </div>
-            <div class="col" id="gamediv">
+            <div class="col-md-4 col-8" id="gamediv">
             </div>
-            <div class="col d-none d-md-block" style="text-align:left;">
-                <b>Next Piece</b>
-                <br><br>
+            <div class="col-md-4 col-4" style="text-align:left;">
+                <div class="d-none d-md-block">
+                    <b>Next Piece</b>
+                    <br>
+                </div>
+                <br>
                 <div id="nextpiecediv">
                 </div>
                 
