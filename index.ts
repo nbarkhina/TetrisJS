@@ -620,7 +620,6 @@ export class MyApp {
         if(referrer==null || referrer=="")
             referrer = "NONE";
         $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines + '&referrer=' + referrer);
-        $.get('https://win12.neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines + '&referrer=' + referrer);
         this.game_mode=GAME_MODE.TITLE;
         for (let i = 0; i < 4; i++)
             for (let j = 0; j < 5; j++)
