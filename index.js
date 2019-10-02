@@ -235,14 +235,7 @@ define(["require", "exports"], function (require, exports) {
             }
             if (leftCounter > 0 || rightCounter > 0 || upCounter > 0 || downCounter > 0) {
                 var greatest = app.findGreatest([leftCounter, rightCounter, upCounter, downCounter]);
-                if (greatest == 0)
-                    app.touchDirection = 'left';
-                if (greatest == 1)
-                    app.touchDirection = 'right';
-                if (greatest == 2)
-                    app.touchDirection = 'up';
-                if (greatest == 3)
-                    app.touchDirection = 'down';
+                app.touchDirection = ['left', 'right', 'up', 'down'][greatest];
             }
         };
         MyApp.prototype.touchEnd = function (event) {
