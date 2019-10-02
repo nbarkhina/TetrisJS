@@ -1409,7 +1409,7 @@ export class MyApp {
             let y = parseInt( element.attributes["y"].value );
 
 
-            if (this.nextPieceMatrix[y][x] > 0 || this.nextPieceMatrix[y][x] > 0)
+            if (this.nextPieceMatrix[y][x] > 0)
             {
                 let color = 'blue';
                 element.style["background-color"] = color;
