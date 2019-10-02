@@ -1022,12 +1022,8 @@ define(["require", "exports"], function (require, exports) {
             var xCounter = -1;
             var yCounter = 0;
             var randBlock = 0;
-            var elements = $("[tetris-block]");
-            var myElements = [];
-            for (var i = 0; i < elements.length; i++)
-                myElements.push(elements[i]);
             var randomColor = this.getRandomColor();
-            myElements.forEach(function (element) {
+            $("[tetris-block]").toArray().forEach(function (element) {
                 xCounter++;
                 if (xCounter == 10) {
                     xCounter = 0;
@@ -1063,14 +1059,10 @@ define(["require", "exports"], function (require, exports) {
                     element.style["background-color"] = 'white';
                 }
             });
-            //draw next puiece
+            //draw next piece
             xCounter = -1;
             yCounter = 0;
-            elements = $("[nextpiece-block]");
-            myElements = [];
-            for (var i = 0; i < elements.length; i++)
-                myElements.push(elements[i]);
-            myElements.forEach(function (element) {
+            $("[nextpiece-block]").toArray().forEach(function (element) {
                 xCounter++;
                 if (xCounter == 7) {
                     xCounter = 0;
@@ -1078,10 +1070,8 @@ define(["require", "exports"], function (require, exports) {
                 }
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
-                if (_this.nextPieceMatrix[y][x] > 0) {
-                    var color = 'blue';
-                    element.style["background-color"] = color;
-                }
+                if (_this.nextPieceMatrix[y][x] > 0)
+                    element.style["background-color"] = 'blue';
                 else
                     element.style["background-color"] = 'white';
             });

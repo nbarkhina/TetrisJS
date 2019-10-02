@@ -1330,16 +1330,10 @@ export class MyApp {
         let xCounter = -1;
         let yCounter = 0;
         let randBlock = 0;
-        let elements = $("[tetris-block]");
-        let myElements:HTMLElement[] = [];
-
-
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
-        
         let randomColor = this.getRandomColor();
 
-        myElements.forEach(element => {
+        $("[tetris-block]").toArray().forEach(element => {
+
             xCounter++;
 
             if (xCounter==10)
@@ -1378,25 +1372,21 @@ export class MyApp {
             {
                 // element.style["background-image"] = 'linear-gradient(grey, grey)';
                 element.style["background-color"] = 'grey';
-            }   
+            }
             else
             {
                 // element.style["background-image"] = 'linear-gradient(white, white)';
                 element.style["background-color"] = 'white';
             }
-                
+
         });
 
-        //draw next puiece
+        //draw next piece
         xCounter = -1;
         yCounter = 0;
-        elements = $("[nextpiece-block]");
-        myElements = [];
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
 
+        $("[nextpiece-block]").toArray().forEach(element => {
 
-        myElements.forEach(element => {
             xCounter++;
 
             if (xCounter==7)
@@ -1410,13 +1400,10 @@ export class MyApp {
 
 
             if (this.nextPieceMatrix[y][x] > 0)
-            {
-                let color = 'blue';
-                element.style["background-color"] = color;
-            }
+                element.style["background-color"] = 'blue';
             else
                 element.style["background-color"] = 'white';
-                
+
         });
 
     }
