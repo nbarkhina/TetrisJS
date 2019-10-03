@@ -347,7 +347,7 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.reset = function () {
             this.game_mode = GAME_MODE.PLAYING;
             for (var i = 0; i < 4; i++) {
-                for (var j = 0; j < 7; j++)
+                for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
             }
             this.nextLevel = 0;
@@ -472,7 +472,7 @@ define(["require", "exports"], function (require, exports) {
             this.piece = this.nextPiece;
             this.nextPiece = this.getRandomNumber(7) + 1;
             for (var i = 0; i < 4; i++)
-                for (var j = 0; j < 7; j++)
+                for (var j = 0; j < 5; j++)
                     this.nextPieceMatrix[i][j] = 0;
             if (this.gameMatrix[1][4] != 0) {
                 this.gameover();

@@ -487,7 +487,7 @@ export class MyApp {
 
 
         for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
                 this.nextPieceMatrix[i][j] = 0;
         }
 
@@ -641,7 +641,7 @@ export class MyApp {
         this.piece = this.nextPiece;
         this.nextPiece = this.getRandomNumber(7) +1;
         for (let i = 0; i < 4; i++)
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
             this.nextPieceMatrix[i][j] = 0;
         if (this.gameMatrix[1][4] != 0)
         {
