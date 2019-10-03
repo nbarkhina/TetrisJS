@@ -759,8 +759,6 @@ export class MyApp {
             this.centY = 1;
             this.state = 1;
         }
-        if (this.gameMatrix[1][4] != 0)
-            this.gameover();
     }
 
     moveLeft()

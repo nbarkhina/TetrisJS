@@ -574,8 +574,6 @@ define(["require", "exports"], function (require, exports) {
                 this.centY = 1;
                 this.state = 1;
             }
-            if (this.gameMatrix[1][4] != 0)
-                this.gameover();
         };
         MyApp.prototype.moveLeft = function () {
             if (this.game_mode != GAME_MODE.PLAYING)
