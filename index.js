@@ -1019,23 +1019,8 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.newPaint = function () {
             var _this = this;
             this.countFPS();
-            var xCounter = -1;
-            var yCounter = 0;
-            var randBlock = 0;
-            var elements = $("[tetris-block]");
-            var myElements = [];
-            for (var i = 0; i < elements.length; i++)
-                myElements.push(elements[i]);
             var randomColor = this.getRandomColor();
-            myElements.forEach(function (element) {
-                xCounter++;
-                if (xCounter == 10) {
-                    xCounter = 0;
-                    yCounter++;
-                }
-                if (xCounter == 0) {
-                    randBlock = _this.getRandomNumber(10);
-                }
+            $("[tetris-block]").toArray().forEach(function (element) {
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
                 if (_this.gameMatrixBuffer[y][x] == 8 || _this.gameMatrix[y][x] == 8) {
@@ -1063,25 +1048,12 @@ define(["require", "exports"], function (require, exports) {
                     element.style["background-color"] = 'white';
                 }
             });
-            //draw next puiece
-            xCounter = -1;
-            yCounter = 0;
-            elements = $("[nextpiece-block]");
-            myElements = [];
-            for (var i = 0; i < elements.length; i++)
-                myElements.push(elements[i]);
-            myElements.forEach(function (element) {
-                xCounter++;
-                if (xCounter == 7) {
-                    xCounter = 0;
-                    yCounter++;
-                }
+            //draw next piece
+            $("[nextpiece-block]").toArray().forEach(function (element) {
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
-                if (_this.nextPieceMatrix[y][x] > 0 || _this.nextPieceMatrix[y][x] > 0) {
-                    var color = 'blue';
-                    element.style["background-color"] = color;
-                }
+                if (_this.nextPieceMatrix[y][x] > 0)
+                    element.style["background-color"] = 'blue';
                 else
                     element.style["background-color"] = 'white';
             });

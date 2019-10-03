@@ -1327,34 +1327,12 @@ export class MyApp {
 
     newPaint(){
         this.countFPS();
-        let xCounter = -1;
-        let yCounter = 0;
-        let randBlock = 0;
-        let elements = $("[tetris-block]");
-        let myElements:HTMLElement[] = [];
-
-
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
-        
         let randomColor = this.getRandomColor();
 
-        myElements.forEach(element => {
-            xCounter++;
-
-            if (xCounter==10)
-            {
-                xCounter = 0;
-                yCounter++;
-            }
-            if (xCounter==0)
-            {
-                randBlock = this.getRandomNumber(10);
-            }
+        $("[tetris-block]").toArray().forEach(element => {
 
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
-
 
             if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8)
             {
@@ -1378,45 +1356,26 @@ export class MyApp {
             {
                 // element.style["background-image"] = 'linear-gradient(grey, grey)';
                 element.style["background-color"] = 'grey';
-            }   
+            }
             else
             {
                 // element.style["background-image"] = 'linear-gradient(white, white)';
                 element.style["background-color"] = 'white';
             }
-                
+
         });
 
-        //draw next puiece
-        xCounter = -1;
-        yCounter = 0;
-        elements = $("[nextpiece-block]");
-        myElements = [];
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
-
-
-        myElements.forEach(element => {
-            xCounter++;
-
-            if (xCounter==7)
-            {
-                xCounter = 0;
-                yCounter++;
-            }
+        //draw next piece
+        $("[nextpiece-block]").toArray().forEach(element => {
 
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
 
-
-            if (this.nextPieceMatrix[y][x] > 0 || this.nextPieceMatrix[y][x] > 0)
-            {
-                let color = 'blue';
-                element.style["background-color"] = color;
-            }
+            if (this.nextPieceMatrix[y][x] > 0)
+                element.style["background-color"] = 'blue';
             else
                 element.style["background-color"] = 'white';
-                
+
         });
 
     }
