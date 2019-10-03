@@ -1019,19 +1019,8 @@ define(["require", "exports"], function (require, exports) {
         MyApp.prototype.newPaint = function () {
             var _this = this;
             this.countFPS();
-            var xCounter = -1;
-            var yCounter = 0;
-            var randBlock = 0;
             var randomColor = this.getRandomColor();
             $("[tetris-block]").toArray().forEach(function (element) {
-                xCounter++;
-                if (xCounter == 10) {
-                    xCounter = 0;
-                    yCounter++;
-                }
-                if (xCounter == 0) {
-                    randBlock = _this.getRandomNumber(10);
-                }
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
                 if (_this.gameMatrixBuffer[y][x] == 8 || _this.gameMatrix[y][x] == 8) {
@@ -1060,14 +1049,7 @@ define(["require", "exports"], function (require, exports) {
                 }
             });
             //draw next piece
-            xCounter = -1;
-            yCounter = 0;
             $("[nextpiece-block]").toArray().forEach(function (element) {
-                xCounter++;
-                if (xCounter == 7) {
-                    xCounter = 0;
-                    yCounter++;
-                }
                 var x = parseInt(element.attributes["x"].value);
                 var y = parseInt(element.attributes["y"].value);
                 if (_this.nextPieceMatrix[y][x] > 0)

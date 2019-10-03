@@ -1327,28 +1327,12 @@ export class MyApp {
 
     newPaint(){
         this.countFPS();
-        let xCounter = -1;
-        let yCounter = 0;
-        let randBlock = 0;
         let randomColor = this.getRandomColor();
 
         $("[tetris-block]").toArray().forEach(element => {
 
-            xCounter++;
-
-            if (xCounter==10)
-            {
-                xCounter = 0;
-                yCounter++;
-            }
-            if (xCounter==0)
-            {
-                randBlock = this.getRandomNumber(10);
-            }
-
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
-
 
             if (this.gameMatrixBuffer[y][x] == 8 || this.gameMatrix[y][x] == 8)
             {
@@ -1382,22 +1366,10 @@ export class MyApp {
         });
 
         //draw next piece
-        xCounter = -1;
-        yCounter = 0;
-
         $("[nextpiece-block]").toArray().forEach(element => {
-
-            xCounter++;
-
-            if (xCounter==7)
-            {
-                xCounter = 0;
-                yCounter++;
-            }
 
             let x = parseInt( element.attributes["x"].value );
             let y = parseInt( element.attributes["y"].value );
-
 
             if (this.nextPieceMatrix[y][x] > 0)
                 element.style["background-color"] = 'blue';
