@@ -508,13 +508,8 @@ export class MyApp {
         this.downKey = false;
         this.leftKey = false;
         this.rightKey = false;
-        this.gameMatrix = [];
-        this.gameMatrixBuffer = [];
+
         for (let i = 0; i < 20; i++) {
-            let arr1: number[] = [];
-            let arr2: number[] = [];
-            this.gameMatrix.push(arr1);
-            this.gameMatrixBuffer.push(arr2);
             for (let j = 0; j < 10; j++) {
                 this.gameMatrix[i][j] = 0;
                 this.gameMatrixBuffer[i][j] = 0;

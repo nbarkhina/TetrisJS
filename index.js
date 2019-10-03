@@ -366,13 +366,7 @@ define(["require", "exports"], function (require, exports) {
             this.downKey = false;
             this.leftKey = false;
             this.rightKey = false;
-            this.gameMatrix = [];
-            this.gameMatrixBuffer = [];
             for (var i = 0; i < 20; i++) {
-                var arr1 = [];
-                var arr2 = [];
-                this.gameMatrix.push(arr1);
-                this.gameMatrixBuffer.push(arr2);
                 for (var j = 0; j < 10; j++) {
                     this.gameMatrix[i][j] = 0;
                     this.gameMatrixBuffer[i][j] = 0;
