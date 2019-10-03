@@ -1444,9 +1444,6 @@ export class MyApp {
 
     onWindowResize()
     {
-        let elements = $("[tetris-block]");
-        let elements2 = $("[nextpiece-block]");
-        let myElements:HTMLElement[] = [];
 
         let boxSize = 20;
         let windowHeight:number = window.innerHeight;
@@ -1457,17 +1454,11 @@ export class MyApp {
             boxSize+=extraSpace;
         }
 
+        $("[tetris-block],[nextpiece-block]").toArray().forEach(element => {
 
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
-        for (let i = 0;i<elements2.length;i++)
-            myElements.push(elements2[i]);
-        
-        myElements.forEach(element => {
-            
-                element.style["width"] = boxSize + 'px';
-                element.style["height"] = boxSize + 'px';
-            
+            element.style["width"] = boxSize + 'px';
+            element.style["height"] = boxSize + 'px';
+
         });
 
         // console.log('window resized. boxsize: ' + boxSize);

@@ -1109,9 +1109,6 @@ define(["require", "exports"], function (require, exports) {
             // $("#gamediv")[0].style["margin-top"] = (windowHeight-gameDivHeight-140) + 'px';
         };
         MyApp.prototype.onWindowResize = function () {
-            var elements = $("[tetris-block]");
-            var elements2 = $("[nextpiece-block]");
-            var myElements = [];
             var boxSize = 20;
             var windowHeight = window.innerHeight;
             if (windowHeight > 800) {
@@ -1119,11 +1116,7 @@ define(["require", "exports"], function (require, exports) {
                 extraSpace = extraSpace / 20;
                 boxSize += extraSpace;
             }
-            for (var i = 0; i < elements.length; i++)
-                myElements.push(elements[i]);
-            for (var i = 0; i < elements2.length; i++)
-                myElements.push(elements2[i]);
-            myElements.forEach(function (element) {
+            $("[tetris-block],[nextpiece-block]").toArray().forEach(function (element) {
                 element.style["width"] = boxSize + 'px';
                 element.style["height"] = boxSize + 'px';
             });
