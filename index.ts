@@ -487,7 +487,7 @@ export class MyApp {
 
 
         for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
                 this.nextPieceMatrix[i][j] = 0;
         }
 
@@ -508,13 +508,8 @@ export class MyApp {
         this.downKey = false;
         this.leftKey = false;
         this.rightKey = false;
-        this.gameMatrix = [];
-        this.gameMatrixBuffer = [];
+
         for (let i = 0; i < 20; i++) {
-            let arr1: number[] = [];
-            let arr2: number[] = [];
-            this.gameMatrix.push(arr1);
-            this.gameMatrixBuffer.push(arr2);
             for (let j = 0; j < 10; j++) {
                 this.gameMatrix[i][j] = 0;
                 this.gameMatrixBuffer[i][j] = 0;
@@ -641,7 +636,7 @@ export class MyApp {
         this.piece = this.nextPiece;
         this.nextPiece = this.getRandomNumber(7) +1;
         for (let i = 0; i < 4; i++)
-            for (let j = 0; j < 7; j++)
+            for (let j = 0; j < 5; j++)
             this.nextPieceMatrix[i][j] = 0;
         if (this.gameMatrix[1][4] != 0)
         {
@@ -764,8 +759,6 @@ export class MyApp {
             this.centY = 1;
             this.state = 1;
         }
-        if (this.gameMatrix[1][4] != 0)
-            this.gameover();
     }
 
     moveLeft()
@@ -1451,9 +1444,6 @@ export class MyApp {
 
     onWindowResize()
     {
-        let elements = $("[tetris-block]");
-        let elements2 = $("[nextpiece-block]");
-        let myElements:HTMLElement[] = [];
 
         let boxSize = 20;
         let windowHeight:number = window.innerHeight;
@@ -1464,17 +1454,11 @@ export class MyApp {
             boxSize+=extraSpace;
         }
 
+        $("[tetris-block],[nextpiece-block]").toArray().forEach(element => {
 
-        for (let i = 0;i<elements.length;i++)
-            myElements.push(elements[i]);
-        for (let i = 0;i<elements2.length;i++)
-            myElements.push(elements2[i]);
-        
-        myElements.forEach(element => {
-            
-                element.style["width"] = boxSize + 'px';
-                element.style["height"] = boxSize + 'px';
-            
+            element.style["width"] = boxSize + 'px';
+            element.style["height"] = boxSize + 'px';
+
         });
 
         // console.log('window resized. boxsize: ' + boxSize);
