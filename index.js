@@ -41,6 +41,10 @@ define(["require", "exports"], function (require, exports) {
             this.lastTouch = new Date();
             this.touchTimer = 0;
             this.touchMoved = false;
+            //slowly move the piece down
+            //rather than fast drop
+            this.touchSlowDownCounter = 0;
+            this.touchSlowDownMode = false;
             //draw:boolean = false;
             this.lastCalledTime = new Date();
             this.fpscounter = 0;
@@ -194,6 +198,7 @@ define(["require", "exports"], function (require, exports) {
             app.touchX_Start = event.touches[0].clientX;
             app.touchX_InitialStart = event.touches[0].clientX;
             app.touchY_Start = event.touches[0].clientY;
+            app.touchSlowDownCounter = event.touches[0].clientY;
             app.touchTimer = 0;
             app.touchMoved = false;
         };
@@ -215,6 +220,20 @@ define(["require", "exports"], function (require, exports) {
                 if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
                     app.touchX_Start = event.touches[0].clientX;
                     app.moveRight();
+                }
+            }
+            else {
+                //NEW section to slowly move it down
+                //only if touch point starts at 250 or above
+                if (app.touchY_Start < 250 && event.touches[0].clientY > app.touchSlowDownCounter + app.touch_threshold - 10) {
+                    //waitForDownKeyRelase so that it doesn't
+                    //keep moving down after a block has dropped
+                    if (!app.waitForDownKeyRelease && !app.toClear) {
+                        app.touchSlowDownCounter = event.touches[0].clientY;
+                        app.moveDown();
+                        app.touchSlowDownMode = true;
+                        app.touchDirection = 'down';
+                    }
                 }
             }
             var leftCounter = 0;
@@ -257,9 +276,8 @@ define(["require", "exports"], function (require, exports) {
                 // if (!app.touchMoved)
                 // app.moveRight();
             }
-            // if (app.touchDirection=='up')
-            //     app.rotate();
-            if (app.touchDirection == 'down') {
+            //don't drop if in slow touch down mode
+            if (app.touchDirection == 'down' && !app.touchSlowDownMode) {
                 app.drop();
             }
             if (app.touchDirection == '') {
@@ -270,6 +288,8 @@ define(["require", "exports"], function (require, exports) {
             }
             // app.downKey = false;
             app.touchDirection = '';
+            app.touchSlowDownMode = false;
+            app.waitForDownKeyRelease = false;
             // app.leftKey = false;
             // app.rightKey = false;
         };
@@ -425,8 +445,10 @@ define(["require", "exports"], function (require, exports) {
             if (this.toMakePiece && this.timer >= 0) {
                 this.makePiece();
                 this.toMakePiece = false;
-                if (this.downKey) //prevent constant downkey if new piece is generated
+                if (this.downKey || this.touchSlowDownMode) //prevent constant downkey if new piece is generated
+                 {
                     this.waitForDownKeyRelease = true;
+                }
             }
             if (this.downKey && !this.toClear && !this.waitForDownKeyRelease) {
                 if (this.downkeytimer % 3 == 0)

@@ -275,6 +275,11 @@ export class MyApp {
     touchTimer = 0;
     touchMoved = false;
 
+    //slowly move the piece down
+    //rather than fast drop
+    touchSlowDownCounter:number=0;
+    touchSlowDownMode = false;
+
     touchStart(event:TouchEvent){
         
         let app = window.myApp as MyApp;
@@ -290,6 +295,7 @@ export class MyApp {
         app.touchX_Start = event.touches[0].clientX;
         app.touchX_InitialStart = event.touches[0].clientX;
         app.touchY_Start = event.touches[0].clientY;
+        app.touchSlowDownCounter = event.touches[0].clientY;
         app.touchTimer = 0;
         app.touchMoved = false;
     }
@@ -316,6 +322,21 @@ export class MyApp {
             {
                 app.touchX_Start = event.touches[0].clientX;
                 app.moveRight();
+            }
+        }
+        else{
+            //NEW section to slowly move it down
+            //only if touch point starts at 250 or above
+            if (app.touchY_Start<250 && event.touches[0].clientY>app.touchSlowDownCounter+app.touch_threshold-10)
+            {   
+                //waitForDownKeyRelase so that it doesn't
+                //keep moving down after a block has dropped
+                if (!app.waitForDownKeyRelease && !app.toClear){
+                    app.touchSlowDownCounter = event.touches[0].clientY;
+                    app.moveDown();
+                    app.touchSlowDownMode = true;
+                    app.touchDirection = 'down';
+                }
             }
         }
 
@@ -369,9 +390,8 @@ export class MyApp {
             // if (!app.touchMoved)
                 // app.moveRight();
         }
-        // if (app.touchDirection=='up')
-        //     app.rotate();
-        if (app.touchDirection=='down')
+        //don't drop if in slow touch down mode
+        if (app.touchDirection=='down' && !app.touchSlowDownMode)
         {
             app.drop();
         }
@@ -385,6 +405,9 @@ export class MyApp {
             
         // app.downKey = false;
         app.touchDirection = '';
+        app.touchSlowDownMode = false;
+        app.waitForDownKeyRelease = false;
+
         // app.leftKey = false;
         // app.rightKey = false;
         
@@ -508,7 +531,7 @@ export class MyApp {
         this.downKey = false;
         this.leftKey = false;
         this.rightKey = false;
-
+        
         for (let i = 0; i < 20; i++) {
             for (let j = 0; j < 10; j++) {
                 this.gameMatrix[i][j] = 0;
@@ -577,8 +600,10 @@ export class MyApp {
             this.makePiece();
             this.toMakePiece = false;
             
-            if (this.downKey) //prevent constant downkey if new piece is generated
+            if (this.downKey || this.touchSlowDownMode) //prevent constant downkey if new piece is generated
+            {
                 this.waitForDownKeyRelease = true;
+            }
         }
         if (this.downKey && !this.toClear && !this.waitForDownKeyRelease)
         {
