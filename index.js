@@ -222,17 +222,25 @@ define(["require", "exports"], function (require, exports) {
                     app.moveRight();
                 }
             }
+            //NEW section to slowly move it down
             else {
-                //NEW section to slowly move it down
-                //only if touch point starts at 250 or above
-                if (app.touchY_Start < 250 && event.touches[0].clientY > app.touchSlowDownCounter + app.touch_threshold - 10) {
-                    //waitForDownKeyRelase so that it doesn't
-                    //keep moving down after a block has dropped
-                    if (!app.waitForDownKeyRelease && !app.toClear) {
+                //waitForDownKeyRelase so that it doesn't
+                //keep moving down after a block has dropped
+                if (!app.waitForDownKeyRelease && !app.toClear) {
+                    //only if touch point starts at 250 or above
+                    if (app.touchY_Start < 250 && event.touches[0].clientY > app.touchSlowDownCounter + app.touch_threshold - 10) {
                         app.touchSlowDownCounter = event.touches[0].clientY;
                         app.moveDown();
                         app.touchSlowDownMode = true;
                         app.touchDirection = 'down';
+                    }
+                    if (xDistance > 50) {
+                        if (event.touches[0].clientX < app.touchX_Start - app.touch_threshold) {
+                            app.moveLeft();
+                        }
+                        if (event.touches[0].clientX > app.touchX_Start + app.touch_threshold) {
+                            app.moveRight();
+                        }
                     }
                 }
             }
