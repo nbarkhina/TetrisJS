@@ -480,7 +480,8 @@ define(["require", "exports"], function (require, exports) {
             var referrer = document.referrer;
             if (referrer == null || referrer == "")
                 referrer = "NONE";
-            $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines + '&referrer=' + referrer);
+            if (document.location.href.toLocaleLowerCase().indexOf('neilb.net') > 1)
+                $.get('https://neilb.net/tetrisjsbackend/api/stuff/addscore?level=' + this.level + '&lines=' + this.lines + '&referrer=' + referrer);
             this.game_mode = GAME_MODE.TITLE;
             for (var i = 0; i < 4; i++)
                 for (var j = 0; j < 5; j++)
