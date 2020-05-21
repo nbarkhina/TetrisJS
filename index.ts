@@ -119,8 +119,8 @@ export class MyApp {
             {
                 for(let i=0;i<gp.buttons.length;i++)
                 {
-                    if (gp.buttons[i].pressed)
-                        console.log(i);
+                    // if (gp.buttons[i].pressed)
+                    //     console.log(i);
                 }
                 this.gamepadButtons.forEach(button => {
 

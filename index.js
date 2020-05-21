@@ -87,8 +87,8 @@ define(["require", "exports"], function (require, exports) {
                 }
                 if (gp) {
                     for (var i = 0; i < gp.buttons.length; i++) {
-                        if (gp.buttons[i].pressed)
-                            console.log(i);
+                        // if (gp.buttons[i].pressed)
+                        //     console.log(i);
                     }
                     this.gamepadButtons.forEach(function (button) {
                         //handle left/right differently - add delay
