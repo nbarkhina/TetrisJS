@@ -38,3 +38,8 @@ The code is written in TypeScript, to run and compile it locally use the followi
 Please send me any feedback or bugs you may find.
 
 Thanks!
+
+# Online Multiplayer
+The multiplayer version of this repo is here
+
+https://github.com/nbarkhina/TetrisNET
